@@ -36,7 +36,10 @@ a:hover{color:#E4623F}
 </sc-for>
 </div>
 </div>
-<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(242,184,92,0.8);margin-top:9px">{{ screenNote }}</div>
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:9px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(242,184,92,0.8)">{{ screenNote }}</div>
+<button onClick="{{ openSettings }}" style="flex:none;background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45);border-bottom:1px solid rgba(251,243,231,0.25)">SETTINGS</button>
+</div>
 </div>
 
 <div style="flex:1;overflow-y:auto;overflow-x:hidden;padding:0 26px 120px">
@@ -62,7 +65,8 @@ a:hover{color:#E4623F}
 <div style="position:absolute;bottom:18px;right:18px;width:26px;height:26px;border-bottom:1px solid #F2B85C;border-right:1px solid #F2B85C"></div>
 <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(242,184,92,0.8),transparent);animation:eosPulse 2.6s ease-in-out infinite"></div>
 </div>
-<button onClick="{{ capture }}" style="height:52px;border:1px solid #F2B85C;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">CAPTURE</button>
+<input type="file" accept="image/*" capture="environment" multiple="{{ true }}" ref="{{ fileRef }}" onChange="{{ onFiles }}" style="display:none">
+<button onClick="{{ capture }}" style="height:52px;border:1px solid #F2B85C;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">TAKE A PHOTO / UPLOAD</button>
 <div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.5);max-width:280px">Shoot as many pages as the list runs to — they merge into one parsed list.</div>
 </div>
 </sc-if>
@@ -71,10 +75,14 @@ a:hover{color:#E4623F}
 <div style="display:flex;flex-direction:column;gap:20px;padding-top:24px;animation:eosRise .3s cubic-bezier(0.22,1,0.36,1)">
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:24px;color:#FBF3E7;letter-spacing:-0.4px">{{ photoCount }} page{{ photoPlural }} captured</div>
 <div style="display:flex;gap:12px;flex-wrap:wrap">
-<sc-for list="{{ photos }}" as="p" hint-placeholder-count="2">
-<div style="width:82px;height:106px;border:1px solid rgba(242,184,92,0.4);display:flex;align-items:flex-end;padding:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:rgba(242,184,92,0.85)">{{ p.label }}</div>
+<input type="file" accept="image/*" capture="environment" multiple="{{ true }}" ref="{{ fileRef }}" onChange="{{ onFiles }}" style="display:none">
+<sc-for list="{{ photos }}" as="p">
+<div style="position:relative;width:82px;height:106px;border:1px solid rgba(242,184,92,0.4);overflow:hidden">
+{{ p.thumb }}
+<div style="position:absolute;left:0;bottom:0;padding:4px 6px;background:rgba(20,19,43,0.8);font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#F2B85C">{{ p.label }}</div>
+</div>
 </sc-for>
-<button onClick="{{ addPhoto }}" style="width:82px;height:106px;background:transparent;border:1px dashed rgba(251,243,231,0.28);color:rgba(251,243,231,0.5);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer">+ PAGE</button>
+<button onClick="{{ capture }}" style="width:82px;height:106px;background:transparent;border:1px dashed rgba(251,243,231,0.28);color:rgba(251,243,231,0.5);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer">+ PAGE</button>
 </div>
 <button onClick="{{ parseMenu }}" style="height:52px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">READ THIS LIST</button>
 <button onClick="{{ reset }}" style="height:34px;border:none;background:transparent;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">START OVER</button>
@@ -91,7 +99,7 @@ a:hover{color:#E4623F}
 
 <sc-if value="{{ scanError }}" hint-placeholder-val="{{ true }}">
 <div style="margin-top:26px;border-left:2px solid #E4623F;padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:12px">
-<div style="font-size:13.5px;line-height:1.5;color:#FBF3E7">The read failed halfway through page 2. Nothing was lost.</div>
+<div style="font-size:13.5px;line-height:1.5;color:#FBF3E7">{{ scanMsg }}</div>
 <button onClick="{{ parseMenu }}" style="align-self:flex-start;height:36px;padding:0 16px;border:1px solid #E4623F;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">RETRY</button>
 </div>
 </sc-if>
@@ -102,6 +110,9 @@ a:hover{color:#E4623F}
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:24px;color:#FBF3E7;letter-spacing:-0.4px">{{ wineCount }} wines found</div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:rgba(251,243,231,0.4)">TAP TO FIX</div>
 </div>
+<sc-if value="{{ scanMsg }}" hint-placeholder-val="{{ true }}">
+<div style="padding:12px 0 0;font-size:12px;line-height:1.5;color:rgba(242,184,92,0.9)">{{ scanMsg }}</div>
+</sc-if>
 <sc-for list="{{ wines }}" as="w" hint-placeholder-count="4">
 <div style="padding:16px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:9px">
 <div style="display:flex;gap:12px;align-items:baseline">
@@ -257,6 +268,34 @@ a:hover{color:#E4623F}
 </div>
 </sc-if>
 
+<sc-if value="{{ isTwelve }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+<div style="padding:22px 0 18px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-style:italic;font-size:23px;line-height:1.35;color:#FBF3E7;letter-spacing:-0.4px;text-wrap:pretty">Twelve who held Olympus, and one who opened the sky before them.</div>
+</div>
+<div style="border-top:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column">
+<sc-for list="{{ gods }}" as="g" hint-placeholder-count="12">
+<div style="display:flex;gap:18px;padding:18px 0;border-bottom:1px solid rgba(251,243,231,0.1)">
+<div style="flex:none;width:36px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.5px;color:rgba(242,184,92,0.7);padding-top:5px">{{ g.numeral }}</div>
+<div style="flex:1;min-width:0">
+<div style="display:flex;align-items:baseline;gap:9px;flex-wrap:wrap">
+<div style="font-family:'Fraunces',serif;font-weight:400;font-size:21px;line-height:1.1;letter-spacing:-0.4px;color:{{ g.color }}">{{ g.name }}</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;color:rgba(251,243,231,0.4)">{{ g.greek }}</div>
+</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(242,184,92,0.75);margin-top:7px">{{ g.domain }}</div>
+<div style="font-size:13px;line-height:1.55;color:rgba(251,243,231,0.72);margin-top:7px;text-wrap:pretty">{{ g.line }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="padding:22px 0 0;display:flex;flex-direction:column;gap:9px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">AND EOS</div>
+<div style="font-size:13px;line-height:1.6;color:rgba(251,243,231,0.72);max-width:300px;text-wrap:pretty">Not one of the twelve. A Titan — daughter of Hyperion, sister to Helios and Selene — who rises first and opens the gates so the rest of them can be seen. Rosy-fingered, up before anyone, and reliably the reason the evening ended when it did.</div>
+</div>
+<div style="padding:20px 0 0;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.3)">HESTIA AND DIONYSUS ARE OFTEN COUNTED IN EACH OTHER'S PLACE</div>
+</div>
+</sc-if>
+
 <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ true }}">
 <div style="display:flex;flex-direction:column">
 <div style="padding:22px 0 8px">
@@ -273,6 +312,64 @@ a:hover{color:#E4623F}
 <div style="height:2px;background:rgba(251,243,231,0.12);position:relative"><div style="position:absolute;left:0;top:0;height:2px;background:linear-gradient(90deg,#7A2438,#E4623F,#F2B85C);width:{{ t.pct }}"></div></div>
 </div>
 </sc-for>
+</div>
+<div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">RECENTLY LOVED</div>
+<div style="border-top:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column">
+<sc-for list="{{ lovedList }}" as="l" hint-placeholder-count="2">
+<div style="padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:5px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+<div style="font-family:'Fraunces',serif;font-size:18px;color:#FBF3E7;letter-spacing:-0.3px">{{ l.wineName }}</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#F2B85C">{{ l.scoreLabel }}</div>
+</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:rgba(251,243,231,0.4)">{{ l.subUpper }}</div>
+<div style="font-size:12.5px;line-height:1.5;color:rgba(251,243,231,0.72);font-style:italic">{{ l.notes }}</div>
+</div>
+</sc-for>
+</div>
+<div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">RECENTLY MISSED</div>
+<div style="border-top:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column">
+<sc-for list="{{ missedList }}" as="l" hint-placeholder-count="1">
+<div style="padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:5px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+<div style="font-family:'Fraunces',serif;font-size:18px;color:rgba(251,243,231,0.85);letter-spacing:-0.3px">{{ l.wineName }}</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(251,243,231,0.5)">{{ l.scoreLabel }}</div>
+</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:rgba(251,243,231,0.4)">{{ l.subUpper }}</div>
+<div style="font-size:12.5px;line-height:1.5;color:rgba(251,243,231,0.6);font-style:italic">{{ l.notes }}</div>
+</div>
+</sc-for>
+</div>
+<div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">{{ noteHeading }}</div>
+<div style="border-top:1px solid rgba(251,243,231,0.14);padding-top:10px">
+<textarea value="{{ personalNote }}" onChange="{{ editNote }}" placeholder="Anything Eos should know — no oaky whites, always ask for the older vintage, Marios hates Merlot" style="width:100%;min-height:86px;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;line-height:1.6;color:#FBF3E7;padding:2px 0 10px;resize:none"></textarea>
+<div style="font-size:11.5px;line-height:1.6;color:rgba(251,243,231,0.38);padding-top:12px;max-width:300px">Passed to Eos with every recommendation, alongside the weights above.</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+
+<div style="flex:none;padding:14px 26px 32px;background:#14132B;border-top:1px solid rgba(251,243,231,0.14);display:flex;justify-content:space-between">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+<button data-v="{{ t.v }}" onClick="{{ setTab }}" style="{{ t.style }}">{{ t.label }}</button>
+</sc-for>
+</div>
+
+</div>
+
+<sc-if value="{{ settingsOpen }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;z-index:56;display:flex;flex-direction:column;justify-content:flex-end">
+<div onClick="{{ closeSettings }}" style="position:absolute;inset:0;background:rgba(11,10,24,0.8)"></div>
+<div style="position:relative;background:#191833;border-top:1px solid #F2B85C;padding:22px 26px 44px;display:flex;flex-direction:column;max-height:94%;overflow-y:auto;animation:eosRise .28s cubic-bezier(0.22,1,0.36,1)">
+<div style="display:flex;align-items:baseline;justify-content:space-between">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.8px;color:rgba(242,184,92,0.8)">SETTINGS</div>
+<button onClick="{{ closeSettings }}" style="background:transparent;border:none;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">CLOSE</button>
+</div>
+<div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">READING WINE LISTS</div>
+<div style="border-top:1px solid rgba(251,243,231,0.14);padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:4px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">ANTHROPIC API KEY</div>
+<input value="{{ apiKey }}" onChange="{{ editApiKey }}" placeholder="sk-ant-…" style="background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FBF3E7;padding:2px 0">
+<div style="font-size:11.5px;line-height:1.5;color:rgba(251,243,231,0.38);padding-top:5px">Kept on this phone only. Without it, Scan shows the demo list.</div>
 </div>
 <div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">SETTINGS</div>
 <div style="display:flex;flex-direction:column;border-top:1px solid rgba(251,243,231,0.14)">
@@ -306,17 +403,8 @@ a:hover{color:#E4623F}
 </div>
 <div style="font-size:11.5px;line-height:1.6;color:rgba(251,243,231,0.38);padding-top:18px;max-width:300px">Connected, both phones read and write the same table and pick up each other's entries live. Unconnected, entries stay on this phone.</div>
 </div>
+</div>
 </sc-if>
-
-</div>
-
-<div style="flex:none;padding:14px 26px 32px;background:#14132B;border-top:1px solid rgba(251,243,231,0.14);display:flex;justify-content:space-between">
-<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
-<button data-v="{{ t.v }}" onClick="{{ setTab }}" style="{{ t.style }}">{{ t.label }}</button>
-</sc-for>
-</div>
-
-</div>
 
 <sc-if value="{{ logOpen }}" hint-placeholder-val="{{ true }}">
 <div style="position:absolute;inset:0;z-index:55;display:flex;flex-direction:column;justify-content:flex-end">
@@ -415,22 +503,68 @@ const TASTE={
  Marios:[{label:'Xinomavro · Naoussa',score:'4.9',pct:'98%'},{label:'Nebbiolo · Piedmont',score:'4.2',pct:'84%'},{label:'Agiorgitiko · Nemea',score:'3.1',pct:'62%'},{label:'Assyrtiko · Santorini',score:'3.9',pct:'78%'}],
  Both:[{label:'Nebbiolo · Piedmont',score:'4.4',pct:'88%'},{label:'Assyrtiko · Santorini',score:'4.3',pct:'86%'},{label:'Xinomavro · Naoussa',score:'4.2',pct:'84%'},{label:'Chardonnay · Burgundy',score:'2.3',pct:'46%'}]
 };
+const GODS=[
+ {numeral:'I',name:'Zeus',greek:'ΖΕΥΣ',domain:'Sky, thunder, order',line:'Youngest son of Kronos, and the one who divided the world with his brothers by lot. Presided over Olympus rather than ruled it outright.'},
+ {numeral:'II',name:'Hera',greek:'ΗΡΑ',domain:'Marriage, sovereignty',line:'Queen of the gods and the older sibling of Zeus. Her sanctuaries at Argos and Samos were among the oldest in Greece.'},
+ {numeral:'III',name:'Poseidon',greek:'ΠΟΣΕΙΔΩΝ',domain:'Sea, earthquakes, horses',line:'Took the sea in the division of the world. Worshipped inland as much as on the coast, and blamed for the ground moving.'},
+ {numeral:'IV',name:'Demeter',greek:'ΔΗΜΗΤΗΡ',domain:'Grain, the harvest',line:'Her search for Persephone is the myth that explains the seasons, and the basis of the Eleusinian Mysteries.'},
+ {numeral:'V',name:'Athena',greek:'ΑΘΗΝΑ',domain:'Wisdom, craft, strategy',line:'Born from the head of Zeus. Patron of Athens, of weaving and of the shipwright — practical skill more than abstract thought.'},
+ {numeral:'VI',name:'Apollo',greek:'ΑΠΟΛΛΩΝ',domain:'Light, music, prophecy, plague',line:'Spoke through the oracle at Delphi. The same god sent sickness and cured it, which the Greeks did not find contradictory.'},
+ {numeral:'VII',name:'Artemis',greek:'ΑΡΤΕΜΙΣ',domain:'The hunt, wild places, childbirth',line:'Apollo\u2019s twin, born first. Her temple at Ephesus was counted among the seven wonders of the ancient world.'},
+ {numeral:'VIII',name:'Ares',greek:'ΑΡΗΣ',domain:'War, courage, slaughter',line:'The violence of battle rather than its strategy — which is why the Greeks respected him less than Athena and the Romans more.'},
+ {numeral:'IX',name:'Aphrodite',greek:'ΑΦΡΟΔΙΤΗ',domain:'Love, beauty, desire',line:'Said to have risen from sea foam off Cyprus. Also a goddess of harbours and safe passage, which is less often remembered.'},
+ {numeral:'X',name:'Hephaestus',greek:'ΗΦΑΙΣΤΟΣ',domain:'Fire, metalwork, invention',line:'The only Olympian who worked. Lame, thrown from Olympus, and the maker of everything the others carried.'},
+ {numeral:'XI',name:'Hermes',greek:'ΕΡΜΗΣ',domain:'Messages, travel, trade, thieves',line:'Crossed every boundary — between gods and mortals, and between the living and the dead, as guide of souls.'},
+ {numeral:'XII',name:'Dionysus',greek:'ΔΙΟΝΥΣΟΣ',domain:'Wine, theatre, release',line:'Arrived last and from elsewhere. Gave the vine, the mask and the festival at which tragedy was first performed \u2014 the god this app answers to.',accent:true}
+];
 const WORDS={1:'Poured it out',2:'Not for us',3:'Perfectly fine',4:'Would order again',5:'Remember this one'};
 const BADGE={loved:GOLD,new:'#F09274',wish:'#C0A6E0',crowd:CREAM};
 class Component extends DCLogic {
   state={
     profile:this.props.startProfile||'Lisa',
-    tab:'scan', scan:'idle', photos:[{label:'P1'}], wines:MENU.map(w=>({...w})),
+    tab:'scan', scan:'idle', photos:[], wines:MENU.map(w=>({...w})), apiKey:'', scanMsg:'',
     budget:'', occasion:'', rec:'empty', entries:SEED,
     view:this.props.journalView||'timeline', who:'Lisa', kind:'Logged', search:'',
     log:null, rating:4, logPrice:'', logCurrency:'€', logServing:'Bottle', logNotes:'', logPlace:'', toast:'',
+    settingsOpen:false, notes:{},
     sbState:'local',
     sbUrl:'https://hfzgnfdoyehoheiuimac.supabase.co',
     sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmemduZmRveWVob2hlaXVpbWFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMDI4ODUsImV4cCI6MjEwMzY3ODg4NX0.LqZSkb2NCTTi1wRn2lgN0mx44gG5zM8-yyHULtUa5DE'.trim(), sbMsg:''
   };
   flash(t){ this.setState({toast:t}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2200); }
   async store(){ if(!this._store) this._store=await import('./supabase-store.js'); return this._store; }
+  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js'); return this._vision; }
+  fileRef=React.createRef();
+  pickFiles(){ const el=this.fileRef.current; if(el){ el.value=''; el.click(); } }
+  async handleFiles(ev){
+    const files=[...(ev.target.files||[])]; if(!files.length) return;
+    try{
+      const v=await this.vision();
+      const urls=await Promise.all(files.map(f=>v.fileToDataUrl(f)));
+      this.setState(p=>({
+        photos:[...p.photos,...urls.map((src,i)=>({label:'P'+(p.photos.length+i+1),src}))],
+        scan:'captured', scanMsg:''}));
+    }catch(err){ this.setState({scan:'error',scanMsg:(err&&err.message)||'Could not read that photo.'}); }
+  }
+  async runParse(){
+    const {photos,apiKey}=this.state;
+    if(!photos.length){ this.pickFiles(); return; }
+    this.setState({scan:'parsing',scanMsg:''});
+    if(!apiKey){
+      setTimeout(()=>this.setState({scan:'parsed',wines:MENU.map(w=>({...w})),
+        scanMsg:'Demo list shown — add an Anthropic key under US to read your own photo.'}),1200);
+      return;
+    }
+    try{
+      const v=await this.vision();
+      const wines=await v.parsePhotos(photos.map(p=>p.src),apiKey);
+      if(!wines.length) throw new Error('No wines found in those photos.');
+      this.setState({scan:'parsed',wines,scanMsg:''});
+    }catch(err){ this.setState({scan:'error',scanMsg:(err&&err.message)||'The read failed.'}); }
+  }
   async componentDidMount(){
+    try{ const v=await this.vision(); const k=v.readKey(); if(k) this.setState({apiKey:k}); }catch(err){}
+    try{ const n=JSON.parse(localStorage.getItem('eos.notes.v1')); if(n) this.setState({notes:n}); }catch(err){}
     let st; try{ st=await this.store(); }catch(err){ return; }
     const local=st.readLocal(); if(local&&local.length) this.setState({entries:local});
     const cfg=st.readConfig();
@@ -480,6 +614,13 @@ class Component extends DCLogic {
         notes:e.notes||e.notedFrom||'',
         tile:r>=5?'#3A1725':r>=4?'#2C1730':r>=3?'#1F1A33':'#181731'};
     });
+    const mine=s.entries.filter(e=>e.rating!=null&&(prof==='Both'||e.user===prof||e.user==='Both'))
+      .slice().sort((x,y)=>y.date.localeCompare(x.date))
+      .map(e=>({...e,scoreLabel:e.rating.toFixed(1),
+        subUpper:[e.producer&&e.producer+' '+(e.vintage||''),e.region,e.restaurant].filter(Boolean).join(' · ').toUpperCase(),
+        notes:e.notes||''}));
+    const loved=mine.filter(e=>e.rating>=4).slice(0,3);
+    const missed=mine.filter(e=>e.rating<=2).slice(0,2);
     const recList=(RECS[prof]||[]).map(r=>{
       const w=s.wines[r.i]||{};
       return {match:r.match,matchUpper:r.match.toUpperCase(),reason:r.reason,name:w.name,price:w.price,badgeFg:BADGE[r.kind],
@@ -487,18 +628,28 @@ class Component extends DCLogic {
     });
     return {
       profile:prof, profilePoss:prof==='Both'?'our':prof+'\u2019s', profilePossCap:poss,
-      screenTitle:{scan:'Scan',rec:'Tonight',journal:'History',profile:'Us'}[s.tab],
-      screenNote:{scan:'READ A LIST FROM A PHOTO',rec:poss.toUpperCase()+' PICK FROM THIS LIST',journal:'WHAT WE DRANK',profile:'PALATE, BACKUP, KEYS'}[s.tab],
+      screenTitle:{scan:'Scan',rec:'Tonight',journal:'History',profile:'Wine taste',twelve:'The Twelve'}[s.tab],
+      screenNote:{scan:'READ A LIST FROM A PHOTO',rec:poss.toUpperCase()+' PICK FROM THIS LIST',journal:'WHAT WE DRANK',profile:'WHAT EOS KNOWS ABOUT '+(prof==='Both'?'US':prof.toUpperCase()),twelve:'THE OLYMPIAN TWELVE'}[s.tab],
+      settingsOpen:s.settingsOpen, openSettings:()=>this.setState({settingsOpen:true}), closeSettings:()=>this.setState({settingsOpen:false}),
+      lovedList:loved, missedList:missed,
+      noteHeading:prof==='Both'?'OUR NOTES FOR EOS':prof.toUpperCase()+'\u2019S NOTES FOR EOS',
+      personalNote:(s.notes||{})[prof]||'',
+      editNote:e=>{ const v=e.target.value;
+        this.setState(p=>{ const n={...(p.notes||{}),[prof]:v}; try{ localStorage.setItem('eos.notes.v1',JSON.stringify(n)); }catch(err){} return {notes:n}; }); },
       profileTabs:['Lisa','Marios','Both'].map((v,i)=>({v,label:i===0?v.toUpperCase():'/ '+v.toUpperCase(),style:this.monoStyle(prof===v)})),
       setProfile:e=>{ const v=e.currentTarget.dataset.v; this.setState({profile:v,who:v}); },
-      isScan:s.tab==='scan', isRec:s.tab==='rec', isJournal:s.tab==='journal', isProfile:s.tab==='profile',
+      isScan:s.tab==='scan', isRec:s.tab==='rec', isJournal:s.tab==='journal', isProfile:s.tab==='profile', isTwelve:s.tab==='twelve',
+      gods:GODS.map(g=>({...g,color:g.accent?'#F2B85C':'#FBF3E7'})),
       scanIdle:s.scan==='idle', scanCaptured:s.scan==='captured', scanParsing:s.scan==='parsing', scanParsed:s.scan==='parsed', scanError:s.scan==='error',
-      photos:s.photos, photoCount:s.photos.length, photoPlural:s.photos.length===1?'':'s',
+      photos:s.photos.map(p=>({...p,thumb:React.createElement('img',{src:p.src,alt:'menu page',
+        style:{width:'100%',height:'100%',objectFit:'cover',opacity:.85}})})),
+      photoCount:s.photos.length, photoPlural:s.photos.length===1?'':'s',
       wines:s.wines.map(w=>({...w,servingShort:w.serving.toUpperCase()})), wineCount:s.wines.length, budget:s.budget, occasion:s.occasion,
-      capture:()=>this.setState({scan:'captured'}),
-      addPhoto:()=>this.setState(p=>({photos:[...p.photos,{label:'P'+(p.photos.length+1)}]})),
-      reset:()=>this.setState({scan:'idle',photos:[{label:'P1'}]}),
-      parseMenu:()=>{ this.setState({scan:'parsing'}); setTimeout(()=>this.setState({scan:'parsed'}),1500); },
+      fileRef:this.fileRef, capture:()=>this.pickFiles(), onFiles:e=>this.handleFiles(e),
+      reset:()=>this.setState({scan:'idle',photos:[],scanMsg:''}),
+      parseMenu:()=>this.runParse(), scanMsg:s.scanMsg,
+      apiKey:s.apiKey, editApiKey:e=>{ const v=e.target.value; this.setState({apiKey:v});
+        this.vision().then(m=>m.writeKey(v)).catch(()=>{}); },
       editWine:e=>{ const i=+e.target.dataset.i,f=e.target.dataset.f,v=e.target.value;
         this.setState(p=>({wines:p.wines.map((w,j)=>j===i?{...w,[f]:v}:w)})); },
       toggleServing:e=>{ const i=+e.currentTarget.dataset.i;
@@ -510,7 +661,7 @@ class Component extends DCLogic {
       recEmpty:s.rec==='empty', recThinking:s.rec==='thinking', recDone:s.rec==='done', recs:recList,
       tasteChips:(TASTE[prof]||[]).slice(0,3).map(t=>({label:t.label.split(' · ')[0].toUpperCase(),score:t.score})),
       tasteRows:TASTE[prof]||[],
-      settingRows:[{label:'Anthropic API key',value:'sk-ant-••••4f2a'},{label:'Model',value:'SONNET-4-6'},{label:'Export backup',value:s.entries.length+' ENTRIES'},{label:'Import backup',value:'MERGE'}],
+      settingRows:[{label:'Model',value:'SONNET-4-6'},{label:'Export backup',value:s.entries.length+' ENTRIES'},{label:'Import backup',value:'MERGE'}],
       sbUrl:s.sbUrl, sbKey:s.sbKey, sbMsg:s.sbMsg,
       sbStatus:{local:'LOCAL ONLY',connecting:'CONNECTING…',connected:'SUPABASE · LIVE',error:'NOT CONNECTED'}[s.sbState],
       sbColor:{local:'rgba(251,243,231,0.45)',connecting:GOLD,connected:'#8FD69A',error:'#F09274'}[s.sbState],
@@ -554,7 +705,7 @@ class Component extends DCLogic {
       setKind:e=>this.setState({kind:e.currentTarget.dataset.v}),
       setView:e=>this.setState({view:e.currentTarget.dataset.v}),
       search:s.search, editSearch:e=>this.setState({search:e.target.value}),
-      tabs:[['scan','SCAN'],['rec','TONIGHT'],['journal','HISTORY'],['profile','US']].map(([v,label])=>({v,label,style:this.tabStyle(s.tab===v)})),
+      tabs:[['scan','SCAN'],['rec','TONIGHT'],['journal','HISTORY'],['profile','TASTE'],['twelve','XII']].map(([v,label])=>({v,label,style:this.tabStyle(s.tab===v)})),
       setTab:e=>this.setState({tab:e.currentTarget.dataset.v}),
       toast:s.toast
     };
@@ -563,3 +714,4 @@ class Component extends DCLogic {
 </script>
 </body>
 </html>
+
