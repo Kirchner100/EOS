@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&family=Public+Sans:ital,wght@0,300..800;1,300..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+body{margin:0;background:#0B0A18;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:'Public Sans',system-ui,sans-serif}
+*{box-sizing:border-box}
+input,textarea,button{font-family:inherit}
+input::placeholder,textarea::placeholder{color:rgba(251,243,231,0.3)}
+a{color:#F2B85C}
+a:hover{color:#E4623F}
+::-webkit-scrollbar{width:0}
+@keyframes eosPulse{0%,100%{opacity:.35}50%{opacity:.9}}
+@keyframes eosRise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="402px,874px">
+
+<div style="position:absolute;inset:0;background:#14132B"></div>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column">
+
+<div style="flex:none;padding:58px 26px 18px;border-bottom:1px solid rgba(251,243,231,0.14)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:33px;color:#FBF3E7;letter-spacing:-0.8px;line-height:1">{{ screenTitle }}</div>
+<div style="display:flex;gap:7px;align-items:baseline">
+<sc-for list="{{ profileTabs }}" as="p" hint-placeholder-count="3">
+<button data-v="{{ p.v }}" onClick="{{ setProfile }}" style="{{ p.style }}">{{ p.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(242,184,92,0.8);margin-top:9px">{{ screenNote }}</div>
+</div>
+
+<div style="flex:1;overflow-y:auto;overflow-x:hidden;padding:0 26px 120px">
+
+<sc-if value="{{ isScan }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+
+<sc-if value="{{ scanIdle }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:22px;padding-top:22px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:25px;line-height:1.3;color:#FBF3E7;letter-spacing:-0.4px;text-wrap:pretty">Point at the wine list.<br><span style="font-style:italic;color:#F2B85C">Eos has your back.</span></div>
+<div style="position:relative;height:320px;border:1px solid rgba(251,243,231,0.14)">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:11px;padding:38px 30px;opacity:.4">
+<div style="height:1px;width:64%;background:rgba(251,243,231,0.7)"></div>
+<div style="height:1px;width:38%;background:rgba(251,243,231,0.3)"></div>
+<div style="height:1px;width:76%;background:rgba(251,243,231,0.7);margin-top:18px"></div>
+<div style="height:1px;width:32%;background:rgba(251,243,231,0.3)"></div>
+<div style="height:1px;width:58%;background:rgba(251,243,231,0.7);margin-top:18px"></div>
+<div style="height:1px;width:46%;background:rgba(251,243,231,0.3)"></div>
+</div>
+<div style="position:absolute;top:18px;left:18px;width:26px;height:26px;border-top:1px solid #F2B85C;border-left:1px solid #F2B85C"></div>
+<div style="position:absolute;top:18px;right:18px;width:26px;height:26px;border-top:1px solid #F2B85C;border-right:1px solid #F2B85C"></div>
+<div style="position:absolute;bottom:18px;left:18px;width:26px;height:26px;border-bottom:1px solid #F2B85C;border-left:1px solid #F2B85C"></div>
+<div style="position:absolute;bottom:18px;right:18px;width:26px;height:26px;border-bottom:1px solid #F2B85C;border-right:1px solid #F2B85C"></div>
+<div style="position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(242,184,92,0.8),transparent);animation:eosPulse 2.6s ease-in-out infinite"></div>
+</div>
+<button onClick="{{ capture }}" style="height:52px;border:1px solid #F2B85C;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">CAPTURE</button>
+<div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.5);max-width:280px">Shoot as many pages as the list runs to — they merge into one parsed list.</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ scanCaptured }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:20px;padding-top:24px;animation:eosRise .3s cubic-bezier(0.22,1,0.36,1)">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:24px;color:#FBF3E7;letter-spacing:-0.4px">{{ photoCount }} page{{ photoPlural }} captured</div>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<sc-for list="{{ photos }}" as="p" hint-placeholder-count="2">
+<div style="width:82px;height:106px;border:1px solid rgba(242,184,92,0.4);display:flex;align-items:flex-end;padding:7px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;color:rgba(242,184,92,0.85)">{{ p.label }}</div>
+</sc-for>
+<button onClick="{{ addPhoto }}" style="width:82px;height:106px;background:transparent;border:1px dashed rgba(251,243,231,0.28);color:rgba(251,243,231,0.5);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer">+ PAGE</button>
+</div>
+<button onClick="{{ parseMenu }}" style="height:52px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">READ THIS LIST</button>
+<button onClick="{{ reset }}" style="height:34px;border:none;background:transparent;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">START OVER</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ scanParsing }}" hint-placeholder-val="{{ true }}">
+<div style="padding-top:70px;display:flex;flex-direction:column;gap:16px">
+<div style="width:100%;height:1px;background:linear-gradient(90deg,#F2B85C,transparent);animation:eosPulse 1.4s ease-in-out infinite"></div>
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:23px;color:#FBF3E7;letter-spacing:-0.4px">Reading the list</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">PRODUCERS · VINTAGES · GRAPES · PRICES</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ scanError }}" hint-placeholder-val="{{ true }}">
+<div style="margin-top:26px;border-left:2px solid #E4623F;padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:12px">
+<div style="font-size:13.5px;line-height:1.5;color:#FBF3E7">The read failed halfway through page 2. Nothing was lost.</div>
+<button onClick="{{ parseMenu }}" style="align-self:flex-start;height:36px;padding:0 16px;border:1px solid #E4623F;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">RETRY</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ scanParsed }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;animation:eosRise .35s cubic-bezier(0.22,1,0.36,1)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:20px 0 12px;border-bottom:1px solid rgba(251,243,231,0.14)">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:24px;color:#FBF3E7;letter-spacing:-0.4px">{{ wineCount }} wines found</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:rgba(251,243,231,0.4)">TAP TO FIX</div>
+</div>
+<sc-for list="{{ wines }}" as="w" hint-placeholder-count="4">
+<div style="padding:16px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:9px">
+<div style="display:flex;gap:12px;align-items:baseline">
+<input value="{{ w.name }}" data-i="{{ $index }}" data-f="name" onChange="{{ editWine }}" style="flex:1;min-width:0;background:transparent;border:none;outline:none;font-family:'Fraunces',serif;font-weight:400;font-size:20px;letter-spacing:-0.4px;color:#FBF3E7;padding:0">
+<input value="{{ w.price }}" data-i="{{ $index }}" data-f="price" onChange="{{ editWine }}" style="width:60px;background:transparent;border:none;outline:none;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#F2B85C;padding:0">
+</div>
+<div style="display:flex;gap:10px;align-items:center">
+<input value="{{ w.producer }}" data-i="{{ $index }}" data-f="producer" onChange="{{ editWine }}" style="flex:1.5;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.12);outline:none;font-size:12px;color:rgba(251,243,231,0.62);padding:3px 0">
+<input value="{{ w.vintage }}" data-i="{{ $index }}" data-f="vintage" onChange="{{ editWine }}" style="width:44px;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.12);outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(251,243,231,0.62);padding:3px 0">
+<button data-i="{{ $index }}" onClick="{{ toggleServing }}" style="flex:none;background:transparent;border:none;border-bottom:1px solid rgba(242,184,92,0.4);color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;padding:3px 2px;cursor:pointer">{{ w.servingShort }}</button>
+</div>
+<div style="display:flex;gap:10px">
+<input value="{{ w.grape }}" data-i="{{ $index }}" data-f="grape" onChange="{{ editWine }}" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.12);outline:none;font-size:12px;color:rgba(251,243,231,0.62);padding:3px 0">
+<input value="{{ w.region }}" data-i="{{ $index }}" data-f="region" onChange="{{ editWine }}" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.12);outline:none;font-size:12px;color:rgba(251,243,231,0.62);padding:3px 0">
+</div>
+</div>
+</sc-for>
+<div style="display:flex;gap:18px;padding:18px 0 22px;border-bottom:1px solid rgba(251,243,231,0.14)">
+<input value="{{ budget }}" onChange="{{ editBudget }}" placeholder="Budget" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;color:#FBF3E7;padding:6px 0">
+<input value="{{ occasion }}" onChange="{{ editOccasion }}" placeholder="Occasion" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;color:#FBF3E7;padding:6px 0">
+</div>
+<button onClick="{{ recommend }}" style="margin-top:22px;height:54px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">FIND OUR PICK</button>
+</div>
+</sc-if>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ isRec }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+
+<sc-if value="{{ recEmpty }}" hint-placeholder-val="{{ true }}">
+<div style="padding-top:60px;display:flex;flex-direction:column;gap:14px;align-items:flex-start">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:25px;line-height:1.3;color:#FBF3E7;letter-spacing:-0.4px">Nothing on the table yet</div>
+<div style="font-size:13px;line-height:1.55;color:rgba(251,243,231,0.5);max-width:270px">Scan a wine list and we pick from what is actually available tonight.</div>
+<button onClick="{{ goScan }}" style="margin-top:10px;height:44px;padding:0 20px;border:1px solid rgba(242,184,92,0.5);background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.8px;cursor:pointer">GO TO SCAN</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ recThinking }}" hint-placeholder-val="{{ true }}">
+<div style="padding-top:60px;display:flex;flex-direction:column;gap:16px">
+<div style="width:100%;height:1px;background:linear-gradient(90deg,#F2B85C,transparent);animation:eosPulse 1.3s ease-in-out infinite"></div>
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:23px;line-height:1.3;color:#FBF3E7;letter-spacing:-0.4px">Weighing {{ wineCount }} wines against {{ profilePoss }} palate</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ recDone }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;animation:eosRise .35s cubic-bezier(0.22,1,0.36,1)">
+<div style="display:flex;flex-wrap:wrap;gap:6px 14px;padding:16px 0;border-bottom:1px solid rgba(251,243,231,0.14);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.1px;color:rgba(251,243,231,0.5)">
+<sc-for list="{{ tasteChips }}" as="c" hint-placeholder-count="3">
+<div>{{ c.label }} <span style="color:#F2B85C">{{ c.score }}</span></div>
+</sc-for>
+</div>
+<sc-for list="{{ recs }}" as="r" hint-placeholder-count="3">
+<div style="padding:22px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:11px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:{{ r.badgeFg }}">{{ r.matchUpper }}</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#F2B85C">{{ r.price }}</div>
+</div>
+<div>
+<div style="font-family:'Fraunces',serif;font-weight:400;font-size:26px;line-height:1.15;color:#FBF3E7;letter-spacing:-0.6px">{{ r.name }}</div>
+<div style="font-size:12px;color:rgba(251,243,231,0.5);margin-top:6px">{{ r.sub }}</div>
+</div>
+<div style="font-size:13.5px;line-height:1.6;color:rgba(251,243,231,0.8);text-wrap:pretty">{{ r.reason }}</div>
+<div style="display:flex;gap:10px;margin-top:4px">
+<button data-i="{{ $index }}" onClick="{{ openLog }}" style="flex:1;height:44px;border:none;background:#FBF3E7;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">WE CHOSE THIS</button>
+<button data-i="{{ $index }}" onClick="{{ saveWish }}" style="flex:none;height:44px;padding:0 16px;border:1px solid rgba(251,243,231,0.28);background:transparent;color:rgba(251,243,231,0.8);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">WANT TO TRY</button>
+</div>
+</div>
+</sc-for>
+<button onClick="{{ recommend }}" style="margin-top:20px;height:42px;border:1px solid rgba(251,243,231,0.2);background:transparent;color:rgba(251,243,231,0.65);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">SHOW ME THREE OTHERS</button>
+</div>
+</sc-if>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ isJournal }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+
+<div style="display:flex;gap:22px;padding:16px 0 0">
+<sc-for list="{{ viewTabs }}" as="t" hint-placeholder-count="3">
+<button data-v="{{ t.v }}" onClick="{{ setView }}" style="{{ t.style }}">{{ t.label }}</button>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-top:1px solid rgba(251,243,231,0.14);border-bottom:1px solid rgba(251,243,231,0.14);margin-top:14px">
+<input value="{{ search }}" onChange="{{ editSearch }}" placeholder="Grape, region, producer, place" style="flex:1;min-width:0;background:transparent;border:none;outline:none;font-size:12.5px;color:#FBF3E7;padding:0">
+<div style="display:flex;gap:12px">
+<sc-for list="{{ kindTabs }}" as="t" hint-placeholder-count="2">
+<button data-v="{{ t.v }}" onClick="{{ setKind }}" style="{{ t.style }}">{{ t.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<sc-if value="{{ journalEmpty }}" hint-placeholder-val="{{ true }}">
+<div style="padding:44px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;color:rgba(251,243,231,0.35)">NOTHING MATCHES THAT YET</div>
+</sc-if>
+
+<sc-if value="{{ viewTimeline }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ entries }}" as="e" hint-placeholder-count="4">
+<div style="display:flex;gap:18px;padding:22px 0;border-bottom:1px solid rgba(251,243,231,0.1)">
+<div style="flex:none;width:52px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.5;white-space:pre-line;color:rgba(242,184,92,0.75)">{{ e.dateStack }}</div>
+<div style="flex:1;min-width:0">
+<div style="font-family:'Fraunces',serif;font-weight:400;font-size:23px;line-height:1.15;color:#FBF3E7;letter-spacing:-0.5px">{{ e.wineName }}</div>
+<div style="font-size:12px;color:rgba(251,243,231,0.5);margin-top:6px">{{ e.sub }}</div>
+<div style="font-size:13px;line-height:1.55;color:rgba(251,243,231,0.76);margin-top:9px;font-style:italic;text-wrap:pretty">{{ e.notes }}</div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:12px">
+<div style="position:relative;width:130px;height:2px;background:rgba(251,243,231,0.14)">
+<div style="position:absolute;left:0;top:0;height:2px;background:linear-gradient(90deg,#7A2438,#E4623F,#F2B85C);width:{{ e.sunPct }}"></div>
+</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:{{ e.scoreColor }}">{{ e.scoreLabel }}</div>
+<div style="flex:1"></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:rgba(251,243,231,0.35)">{{ e.whoUpper }}</div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ viewList }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ entries }}" as="e" hint-placeholder-count="5">
+<div style="padding:15px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;align-items:baseline;gap:12px">
+<div style="flex:1;min-width:0">
+<div style="font-family:'Fraunces',serif;font-weight:400;font-size:18px;color:#FBF3E7;letter-spacing:-0.3px">{{ e.wineName }}</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.8px;color:rgba(251,243,231,0.45);margin-top:5px">{{ e.subUpper }}</div>
+</div>
+<div style="flex:none;display:flex;align-items:center;gap:9px">
+<div style="position:relative;width:52px;height:2px;background:rgba(251,243,231,0.14)"><div style="position:absolute;left:0;top:0;height:2px;background:linear-gradient(90deg,#7A2438,#F2B85C);width:{{ e.sunPct }}"></div></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:{{ e.scoreColor }};width:26px;text-align:right">{{ e.scoreLabel }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<sc-if value="{{ viewGallery }}" hint-placeholder-val="{{ true }}">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:transparent;margin-top:18px">
+<sc-for list="{{ entries }}" as="e" hint-placeholder-count="4">
+<div style="aspect-ratio:0.82;padding:15px;display:flex;flex-direction:column;justify-content:space-between;border:1px solid rgba(251,243,231,0.1);background:{{ e.tile }}">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:rgba(251,243,231,0.55)">{{ e.vintage }} · {{ e.scoreLabel }}</div>
+<div>
+<div style="font-family:'Fraunces',serif;font-weight:400;font-size:17px;line-height:1.15;color:#FBF3E7;letter-spacing:-0.3px">{{ e.wineName }}</div>
+<div style="font-size:11.5px;color:rgba(251,243,231,0.5);margin-top:5px">{{ e.grape }}</div>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+</div>
+</sc-if>
+
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column">
+<div style="padding:22px 0 8px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:25px;color:#FBF3E7;letter-spacing:-0.5px">{{ profilePossCap }} palate</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.2px;color:rgba(251,243,231,0.4);margin-top:8px">GRAPE × REGION, WEIGHTED BY RATING AND RECENCY</div>
+</div>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ tasteRows }}" as="t" hint-placeholder-count="4">
+<div style="padding:15px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<div style="font-size:13px;color:rgba(251,243,231,0.8)">{{ t.label }}</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#F2B85C">{{ t.score }}</div>
+</div>
+<div style="height:2px;background:rgba(251,243,231,0.12);position:relative"><div style="position:absolute;left:0;top:0;height:2px;background:linear-gradient(90deg,#7A2438,#E4623F,#F2B85C);width:{{ t.pct }}"></div></div>
+</div>
+</sc-for>
+</div>
+<div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">SETTINGS</div>
+<div style="display:flex;flex-direction:column;border-top:1px solid rgba(251,243,231,0.14)">
+<sc-for list="{{ settingRows }}" as="s" hint-placeholder-count="4">
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:15px 0;border-bottom:1px solid rgba(251,243,231,0.1)">
+<div style="font-size:13px;color:#FBF3E7">{{ s.label }}</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,184,92,0.85)">{{ s.value }}</div>
+</div>
+</sc-for>
+</div>
+<div style="padding:26px 0 6px;display:flex;align-items:baseline;justify-content:space-between">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">STORAGE</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:{{ sbColor }}">{{ sbStatus }}</div>
+</div>
+<div style="border-top:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column">
+<div style="padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:4px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">PROJECT URL</div>
+<input value="{{ sbUrl }}" onChange="{{ editSbUrl }}" placeholder="https://xxxx.supabase.co" style="background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FBF3E7;padding:2px 0">
+</div>
+<div style="padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:4px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">ANON PUBLIC KEY</div>
+<input value="{{ sbKey }}" onChange="{{ editSbKey }}" placeholder="eyJhbGciOi…" style="background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FBF3E7;padding:2px 0;text-overflow:ellipsis">
+</div>
+</div>
+<sc-if value="{{ sbMsg }}" hint-placeholder-val="{{ true }}">
+<div style="padding:12px 0 0;font-size:12px;line-height:1.5;color:{{ sbColor }}">{{ sbMsg }}</div>
+</sc-if>
+<div style="display:flex;gap:10px;padding-top:16px">
+<button onClick="{{ connectSb }}" style="flex:1;height:44px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">{{ sbAction }}</button>
+<button onClick="{{ pushSb }}" style="flex:none;height:44px;padding:0 16px;border:1px solid rgba(251,243,231,0.28);background:transparent;color:rgba(251,243,231,0.8);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">PUSH LOCAL</button>
+</div>
+<div style="font-size:11.5px;line-height:1.6;color:rgba(251,243,231,0.38);padding-top:18px;max-width:300px">Connected, both phones read and write the same table and pick up each other's entries live. Unconnected, entries stay on this phone.</div>
+</div>
+</sc-if>
+
+</div>
+
+<div style="flex:none;padding:14px 26px 32px;background:#14132B;border-top:1px solid rgba(251,243,231,0.14);display:flex;justify-content:space-between">
+<sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+<button data-v="{{ t.v }}" onClick="{{ setTab }}" style="{{ t.style }}">{{ t.label }}</button>
+</sc-for>
+</div>
+
+</div>
+
+<sc-if value="{{ logOpen }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;inset:0;z-index:55;display:flex;flex-direction:column;justify-content:flex-end">
+<div onClick="{{ closeLog }}" style="position:absolute;inset:0;background:rgba(11,10,24,0.78)"></div>
+<div style="position:relative;background:#191833;border-top:1px solid #F2B85C;padding:22px 26px 44px;display:flex;flex-direction:column;gap:20px;max-height:92%;overflow-y:auto;animation:eosRise .28s cubic-bezier(0.22,1,0.36,1)">
+<div style="display:flex;align-items:baseline;justify-content:space-between">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.8px;color:rgba(242,184,92,0.8)">WE CHOSE THIS</div>
+<button onClick="{{ closeLog }}" style="background:transparent;border:none;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">CLOSE</button>
+</div>
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:26px;color:#FBF3E7;letter-spacing:-0.6px;line-height:1.15">{{ logName }}</div>
+
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;justify-content:space-between;align-items:baseline">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.45)">HOW WAS IT</div>
+<div style="font-family:'Fraunces',serif;font-style:italic;font-size:16px;color:#F2B85C">{{ ratingWord }}</div>
+</div>
+<div style="position:relative;height:46px;display:flex;align-items:center">
+<div style="position:absolute;left:0;right:0;height:6px;background:linear-gradient(90deg,#14132B,#4B2E63 28%,#7A2438 52%,#E4623F 78%,#F2B85C);border:1px solid rgba(251,243,231,0.14)"></div>
+<div style="position:absolute;top:6px;width:32px;height:32px;transform:translateX(-50%);background:radial-gradient(circle at 35% 32%,#FFF3DA,#F2B85C 55%,#E4623F);border:1px solid rgba(251,243,231,0.9);left:{{ sunPct }};transition:left .3s cubic-bezier(0.22,1,0.36,1)"></div>
+<div style="position:absolute;inset:0;display:flex">
+<sc-for list="{{ dialStops }}" as="d" hint-placeholder-count="5">
+<button data-v="{{ d.v }}" onClick="{{ setRating }}" style="flex:1;background:transparent;border:none;cursor:pointer"></button>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(251,243,231,0.3)">
+<span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+</div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-bottom:4px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.45)">WHO DRANK IT</div>
+<div style="display:flex;gap:14px">
+<sc-for list="{{ logUserTabs }}" as="u" hint-placeholder-count="3">
+<button data-v="{{ u.v }}" onClick="{{ setLogUser }}" style="{{ u.style }}">{{ u.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="display:flex;gap:16px;align-items:baseline">
+<input value="{{ logPrice }}" onChange="{{ editLogPrice }}" placeholder="Price" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#FBF3E7;padding:7px 0">
+<button onClick="{{ cycleCurrency }}" style="flex:none;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:7px 6px;cursor:pointer">{{ logCurrency }}</button>
+<button onClick="{{ cycleServing }}" style="flex:none;background:transparent;border:none;border-bottom:1px solid rgba(242,184,92,0.5);color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:1.4px;padding:7px 4px;cursor:pointer">{{ logServingUpper }}</button>
+</div>
+<input value="{{ logPlace }}" onChange="{{ editLogPlace }}" placeholder="Where" style="background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;color:#FBF3E7;padding:7px 0">
+<textarea value="{{ logNotes }}" onChange="{{ editLogNotes }}" placeholder="Notes — what it tasted like, who we were with" style="min-height:70px;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;line-height:1.55;color:#FBF3E7;padding:7px 0;resize:none"></textarea>
+<button onClick="{{ saveLog }}" style="height:52px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer">{{ saveLabel }}</button>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:26px;right:26px;bottom:104px;z-index:65;background:#FBF3E7;color:#14132B;padding:13px 15px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;animation:eosRise .26s ease-out">{{ toast }}</div>
+</sc-if>
+
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:940},&quot;startProfile&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Lisa&quot;,&quot;Marios&quot;,&quot;Both&quot;],&quot;default&quot;:&quot;Lisa&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;journalView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;timeline&quot;,&quot;list&quot;,&quot;gallery&quot;],&quot;default&quot;:&quot;timeline&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const GOLD='#F2B85C',CREAM='#FBF3E7';
+const MENU=[
+ {name:'Assyrtiko "Santorini"',producer:'Estate Argyros',vintage:'2021',grape:'Assyrtiko',region:'Santorini',serving:'Glass',price:'€14'},
+ {name:'Xinomavro Old Vines',producer:'Kir-Yianni',vintage:'2019',grape:'Xinomavro',region:'Naoussa',serving:'Bottle',price:'€58'},
+ {name:'Etna Rosso',producer:'Passopisciaro',vintage:'2020',grape:'Nerello Mascalese',region:'Etna',serving:'Bottle',price:'€72'},
+ {name:'Malagousia',producer:'Ktima Gerovassiliou',vintage:'2022',grape:'Malagousia',region:'Epanomi',serving:'Glass',price:'€12'},
+ {name:'Barbaresco',producer:'Produttori del Barbaresco',vintage:'2018',grape:'Nebbiolo',region:'Piedmont',serving:'Bottle',price:'€95'},
+ {name:'Moschofilero',producer:'Tselepos',vintage:'2022',grape:'Moschofilero',region:'Mantinia',serving:'Glass',price:'€11'}
+];
+const SEED=[
+ {id:'1',user:'Lisa',date:'2026-08-14',wineName:'Santorini Assyrtiko',producer:'Domaine Sigalas',vintage:'2022',grape:'Assyrtiko',region:'Santorini',serving:'Bottle',price:46,currency:'€',rating:5,notes:'Salt and lemon pith. We finished it before the food came.',restaurant:'Kanella, Athens'},
+ {id:'2',user:'Marios',date:'2026-08-02',wineName:'Xinomavro Naoussa',producer:'Thymiopoulos',vintage:'2019',grape:'Xinomavro',region:'Naoussa',serving:'Bottle',price:52,currency:'€',rating:5,notes:'Tomato leaf, dried rose. The one to beat.',restaurant:'Oinoscent'},
+ {id:'3',user:'Lisa',date:'2026-07-21',wineName:'Etna Rosso',producer:'Graci',vintage:'2021',grape:'Nerello Mascalese',region:'Etna',serving:'Glass',price:13,currency:'€',rating:4,notes:'Ash and cherry. Lighter than expected.',restaurant:'Bar Basso'},
+ {id:'4',user:'Marios',date:'2026-07-09',wineName:'Barbaresco Asili',producer:'Produttori del Barbaresco',vintage:'2018',grape:'Nebbiolo',region:'Piedmont',serving:'Bottle',price:88,currency:'€',rating:4,notes:'Needed an hour. Worth the wait.',restaurant:'Da Cesare'},
+ {id:'5',user:'Lisa',date:'2026-06-28',wineName:'Chablis 1er Cru',producer:'Domaine Bessin',vintage:'2020',grape:'Chardonnay',region:'Burgundy',serving:'Bottle',price:64,currency:'€',rating:2,notes:'Flat and buttery. Not our shape of white.',restaurant:'Le Rigmarole'},
+ {id:'6',user:'Marios',date:'2026-06-11',wineName:'Agiorgitiko',producer:'Gaia',vintage:'2021',grape:'Agiorgitiko',region:'Nemea',serving:'Glass',price:11,currency:'€',rating:3,notes:'Fine, forgettable.',restaurant:'Vintage Wine Bar'},
+ {id:'w1',user:'Lisa',date:'2026-08-19',wineName:'Barolo Cannubi',producer:'Luciano Sandrone',vintage:'2016',grape:'Nebbiolo',region:'Piedmont',rating:null,notes:'',restaurant:'',notedFrom:'Recommended by the sommelier at Kanella'},
+ {id:'w2',user:'Marios',date:'2026-08-06',wineName:'Vin Santo di Carmignano',producer:'Capezzana',vintage:'2015',grape:'Trebbiano',region:'Tuscany',rating:null,notes:'',restaurant:'',notedFrom:'Read about it on the flight'}
+];
+const RECS={
+ Lisa:[
+  {i:0,match:'Loved similar before',kind:'loved',reason:"You gave Sigalas Assyrtiko a 5 two weeks ago. Same island, same salinity, a shade riper — this is the safe joy of the list."},
+  {i:2,match:'New but promising',kind:'new',reason:"Graci's Etna scored a 4 on the glass alone. Passopisciaro is the more serious grower on the same slope and it's the only red here under €80."},
+  {i:4,match:'Wishlist match',kind:'wish',reason:"Nebbiolo has been on your want-to-try since Sandrone. This is the cooperative bottling — the honest introduction, and it's on the list tonight."}
+ ],
+ Marios:[
+  {i:1,match:'Loved similar before',kind:'loved',reason:"Thymiopoulos Xinomavro is your highest-rated bottle. Kir-Yianni's old vines are the plusher cousin — same tomato-leaf grip, softer edges."},
+  {i:4,match:'Wishlist match',kind:'wish',reason:"You rated Produttori's Asili a 4 in July. This is the straight Barbaresco from the same house, €7 cheaper than what you paid."},
+  {i:3,match:'Crowd pleaser',kind:'crowd',reason:"If Lisa is drinking too: Malagousia is the one white on this list that no one at the table argues about. Peach without sweetness."}
+ ],
+ Both:[
+  {i:4,match:'Loved similar before',kind:'loved',reason:"The one grape you both rate above a 4. Marios gave Produttori's Asili a 4 in July and Nebbiolo sits on Lisa's want-to-try — this bottle settles the table."},
+  {i:0,match:'Crowd pleaser',kind:'crowd',reason:"Argyros Assyrtiko by the glass is the safe opener: Lisa's highest-scoring grape, and Marios rates Santorini whites a 3.9 — no argument, no bottle commitment."},
+  {i:2,match:'New but promising',kind:'new',reason:"Neither of you has had Passopisciaro. Etna reds land between Lisa's Graci 4 and Marios's Xinomavro 5 — same volcanic grip, new to both."}
+ ]
+};
+const TASTE={
+ Lisa:[{label:'Assyrtiko · Santorini',score:'4.8',pct:'96%'},{label:'Nerello Mascalese · Etna',score:'4.1',pct:'82%'},{label:'Nebbiolo · Piedmont',score:'3.6',pct:'72%'},{label:'Chardonnay · Burgundy',score:'2.0',pct:'40%'}],
+ Marios:[{label:'Xinomavro · Naoussa',score:'4.9',pct:'98%'},{label:'Nebbiolo · Piedmont',score:'4.2',pct:'84%'},{label:'Agiorgitiko · Nemea',score:'3.1',pct:'62%'},{label:'Assyrtiko · Santorini',score:'3.9',pct:'78%'}],
+ Both:[{label:'Nebbiolo · Piedmont',score:'4.4',pct:'88%'},{label:'Assyrtiko · Santorini',score:'4.3',pct:'86%'},{label:'Xinomavro · Naoussa',score:'4.2',pct:'84%'},{label:'Chardonnay · Burgundy',score:'2.3',pct:'46%'}]
+};
+const WORDS={1:'Poured it out',2:'Not for us',3:'Perfectly fine',4:'Would order again',5:'Remember this one'};
+const BADGE={loved:GOLD,new:'#F09274',wish:'#C0A6E0',crowd:CREAM};
+class Component extends DCLogic {
+  state={
+    profile:this.props.startProfile||'Lisa',
+    tab:'scan', scan:'idle', photos:[{label:'P1'}], wines:MENU.map(w=>({...w})),
+    budget:'', occasion:'', rec:'empty', entries:SEED,
+    view:this.props.journalView||'timeline', who:'Lisa', kind:'Logged', search:'',
+    log:null, rating:4, logPrice:'', logCurrency:'€', logServing:'Bottle', logNotes:'', logPlace:'', toast:'',
+    sbState:'local', sbUrl:'', sbKey:'', sbMsg:''
+  };
+  flash(t){ this.setState({toast:t}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2200); }
+  async store(){ if(!this._store) this._store=await import('./supabase-store.js'); return this._store; }
+  async componentDidMount(){
+    let st; try{ st=await this.store(); }catch(err){ return; }
+    const local=st.readLocal(); if(local&&local.length) this.setState({entries:local});
+    const cfg=st.readConfig();
+    if(cfg.url&&cfg.key){ this.setState({sbUrl:cfg.url,sbKey:cfg.key}); this.doConnect(cfg.url,cfg.key); }
+  }
+  componentWillUnmount(){ if(this._unsub) this._unsub(); }
+  persist(entries){ this.store().then(st=>st.writeLocal(entries)).catch(()=>{}); }
+  async doConnect(url,key){
+    const st=await this.store();
+    this.setState({sbState:'connecting',sbMsg:''});
+    try{
+      await st.connect(url,key);
+      st.writeConfig(url,key);
+      const rows=await st.fetchEntries();
+      this.setState({sbState:'connected',entries:rows.length?rows:this.state.entries,
+        sbMsg:rows.length?'':'Table is empty — use PUSH LOCAL to send this phone\u2019s entries up.'});
+      if(this._unsub) this._unsub();
+      this._unsub=st.subscribe(async()=>{ try{ this.setState({entries:await st.fetchEntries()}); }catch(e){} });
+    }catch(err){
+      this.setState({sbState:'error',sbMsg:(err&&err.message)||'Could not reach that project.'});
+    }
+  }
+  async writeEntry(entry){
+    if(this.state.sbState!=='connected') return entry;
+    try{ const st=await this.store(); return await st.saveEntry(entry); }
+    catch(err){ this.setState({sbMsg:'Saved on this phone only: '+((err&&err.message)||'write failed')}); return entry; }
+  }
+  tabStyle(active){ return `background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.5px;color:${active?GOLD:'rgba(251,243,231,0.4)'};border-bottom:1px solid ${active?GOLD:'transparent'};padding-bottom:3px`; }
+  viewStyle(active){ return `background:transparent;border:none;padding:0 0 5px;cursor:pointer;font-family:'Public Sans',sans-serif;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:${active?GOLD:'rgba(251,243,231,0.35)'};border-bottom:2px solid ${active?GOLD:'transparent'}`; }
+  monoStyle(active){ return `background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.2px;color:${active?CREAM:'rgba(251,243,231,0.3)'}`; }
+  renderVals(){
+    const s=this.state, prof=s.profile;
+    const poss=prof==='Both'?'Our':prof+'\u2019s';
+    const ent=s.entries.filter(e=>{
+      if(s.who!=='Both'&&e.user!==s.who&&e.user!=='Both') return false;
+      if(s.kind==='Logged'?e.rating==null:e.rating!=null) return false;
+      const q=s.search.trim().toLowerCase();
+      if(!q) return true;
+      return [e.grape,e.region,e.producer,e.restaurant,e.wineName].join(' ').toLowerCase().includes(q);
+    }).map(e=>{
+      const d=new Date(e.date+'T12:00:00'), r=e.rating;
+      const sub=[e.producer&&e.producer+' '+(e.vintage||''),e.region,e.restaurant].filter(Boolean).join(' · ');
+      return {...e, sunPct:r?((r-1)/4*100||6)+'%':'0%',
+        scoreLabel:r?r.toFixed(1):'—', scoreColor:r?(r>=3?GOLD:'rgba(251,243,231,0.5)'):'rgba(251,243,231,0.4)',
+        dateStack:d.toLocaleDateString('en-GB',{day:'2-digit'})+'\n'+d.toLocaleDateString('en-GB',{month:'short'}).toUpperCase(),
+        sub, subUpper:sub.toUpperCase(), whoUpper:e.user.toUpperCase(),
+        notes:e.notes||e.notedFrom||'',
+        tile:r>=5?'#3A1725':r>=4?'#2C1730':r>=3?'#1F1A33':'#181731'};
+    });
+    const recList=(RECS[prof]||[]).map(r=>{
+      const w=s.wines[r.i]||{};
+      return {match:r.match,matchUpper:r.match.toUpperCase(),reason:r.reason,name:w.name,price:w.price,badgeFg:BADGE[r.kind],
+        sub:[w.producer,w.vintage,w.region,w.serving].filter(Boolean).join(' · ')};
+    });
+    return {
+      profile:prof, profilePoss:prof==='Both'?'our':prof+'\u2019s', profilePossCap:poss,
+      screenTitle:{scan:'Scan',rec:'Tonight',journal:'History',profile:'Us'}[s.tab],
+      screenNote:{scan:'READ A LIST FROM A PHOTO',rec:poss.toUpperCase()+' PICK FROM THIS LIST',journal:'WHAT WE DRANK',profile:'PALATE, BACKUP, KEYS'}[s.tab],
+      profileTabs:['Lisa','Marios','Both'].map((v,i)=>({v,label:i===0?v.toUpperCase():'/ '+v.toUpperCase(),style:this.monoStyle(prof===v)})),
+      setProfile:e=>{ const v=e.currentTarget.dataset.v; this.setState({profile:v,who:v}); },
+      isScan:s.tab==='scan', isRec:s.tab==='rec', isJournal:s.tab==='journal', isProfile:s.tab==='profile',
+      scanIdle:s.scan==='idle', scanCaptured:s.scan==='captured', scanParsing:s.scan==='parsing', scanParsed:s.scan==='parsed', scanError:s.scan==='error',
+      photos:s.photos, photoCount:s.photos.length, photoPlural:s.photos.length===1?'':'s',
+      wines:s.wines.map(w=>({...w,servingShort:w.serving.toUpperCase()})), wineCount:s.wines.length, budget:s.budget, occasion:s.occasion,
+      capture:()=>this.setState({scan:'captured'}),
+      addPhoto:()=>this.setState(p=>({photos:[...p.photos,{label:'P'+(p.photos.length+1)}]})),
+      reset:()=>this.setState({scan:'idle',photos:[{label:'P1'}]}),
+      parseMenu:()=>{ this.setState({scan:'parsing'}); setTimeout(()=>this.setState({scan:'parsed'}),1500); },
+      editWine:e=>{ const i=+e.target.dataset.i,f=e.target.dataset.f,v=e.target.value;
+        this.setState(p=>({wines:p.wines.map((w,j)=>j===i?{...w,[f]:v}:w)})); },
+      toggleServing:e=>{ const i=+e.currentTarget.dataset.i;
+        this.setState(p=>({wines:p.wines.map((w,j)=>j===i?{...w,serving:w.serving==='Bottle'?'Glass':'Bottle'}:w)})); },
+      editBudget:e=>this.setState({budget:e.target.value}),
+      editOccasion:e=>this.setState({occasion:e.target.value}),
+      recommend:()=>{ this.setState({tab:'rec',rec:'thinking'}); setTimeout(()=>this.setState({rec:'done'}),1600); },
+      goScan:()=>this.setState({tab:'scan'}),
+      recEmpty:s.rec==='empty', recThinking:s.rec==='thinking', recDone:s.rec==='done', recs:recList,
+      tasteChips:(TASTE[prof]||[]).slice(0,3).map(t=>({label:t.label.split(' · ')[0].toUpperCase(),score:t.score})),
+      tasteRows:TASTE[prof]||[],
+      settingRows:[{label:'Anthropic API key',value:'sk-ant-••••4f2a'},{label:'Model',value:'SONNET-4-6'},{label:'Export backup',value:s.entries.length+' ENTRIES'},{label:'Import backup',value:'MERGE'}],
+      sbUrl:s.sbUrl, sbKey:s.sbKey, sbMsg:s.sbMsg,
+      sbStatus:{local:'LOCAL ONLY',connecting:'CONNECTING…',connected:'SUPABASE · LIVE',error:'NOT CONNECTED'}[s.sbState],
+      sbColor:{local:'rgba(251,243,231,0.45)',connecting:GOLD,connected:'#8FD69A',error:'#F09274'}[s.sbState],
+      sbAction:s.sbState==='connected'?'RECONNECT':'CONNECT',
+      editSbUrl:e=>this.setState({sbUrl:e.target.value}),
+      editSbKey:e=>this.setState({sbKey:e.target.value}),
+      connectSb:()=>{ if(!s.sbUrl||!s.sbKey){ this.setState({sbState:'error',sbMsg:'Paste the project URL and the anon public key first.'}); return; } this.doConnect(s.sbUrl.trim(),s.sbKey.trim()); },
+      pushSb:async()=>{ if(s.sbState!=='connected'){ this.setState({sbMsg:'Connect first, then push.'}); return; }
+        try{ const st=await this.store(); const n=await st.pushLocal(s.entries); const rows=await st.fetchEntries();
+          this.setState({entries:rows,sbMsg:n?n+' entries pushed to Supabase.':'Nothing local left to push.'}); }
+        catch(err){ this.setState({sbMsg:(err&&err.message)||'Push failed.'}); } },
+      openLog:e=>{ const i=+e.currentTarget.dataset.i, r=recList[i];
+        this.setState({log:r.name,rating:4,logUser:prof,logPrice:(r.price||'').replace(/[^0-9]/g,''),logServing:'Bottle',logNotes:'',logPlace:s.occasion||''}); },
+      logUserTabs:['Lisa','Marios','Both'].map(v=>({v,label:v.toUpperCase(),style:this.monoStyle((s.logUser||prof)===v)})),
+      setLogUser:e=>this.setState({logUser:e.currentTarget.dataset.v}),
+      saveWish:e=>{ const i=+e.currentTarget.dataset.i, r=recList[i], w=s.wines[(RECS[prof][i]||{}).i]||{};
+        const item={id:'w'+Date.now(),user:prof,date:new Date().toISOString().slice(0,10),wineName:r.name,producer:w.producer,vintage:w.vintage,grape:w.grape,region:w.region,rating:null,notes:'',restaurant:'',notedFrom:s.occasion||'Seen on a list'};
+        const next=[item,...s.entries]; this.setState({entries:next}); this.persist(next);
+        this.writeEntry(item).then(saved=>{ if(saved&&saved.id!==item.id) this.setState(p=>({entries:p.entries.map(x=>x.id===item.id?saved:x)})); });
+        this.flash('SAVED TO '+(prof==='Both'?'OUR':prof.toUpperCase()+'\u2019S')+' WANT-TO-TRY'); },
+      logOpen:!!s.log, logName:s.log, closeLog:()=>this.setState({log:null}),
+      dialStops:[1,2,3,4,5].map(v=>({v})), sunPct:((s.rating-1)/4*100)+'%', ratingWord:WORDS[s.rating],
+      setRating:e=>this.setState({rating:+e.currentTarget.dataset.v}),
+      logPrice:s.logPrice, logCurrency:s.logCurrency, logServing:s.logServing, logServingUpper:s.logServing.toUpperCase(),
+      logNotes:s.logNotes, logPlace:s.logPlace, saveLabel:'ADD TO '+((s.logUser||prof)==='Both'?'OUR':(s.logUser||prof).toUpperCase()+'\u2019S')+' HISTORY',
+      editLogPrice:e=>this.setState({logPrice:e.target.value}),
+      editLogPlace:e=>this.setState({logPlace:e.target.value}),
+      editLogNotes:e=>this.setState({logNotes:e.target.value}),
+      cycleCurrency:()=>this.setState(p=>({logCurrency:{'€':'$','$':'£','£':'€'}[p.logCurrency]})),
+      cycleServing:()=>this.setState(p=>({logServing:p.logServing==='Bottle'?'Glass':'Bottle'})),
+      saveLog:()=>{ const w=s.wines.find(x=>x.name===s.log)||{}, u=s.logUser||prof;
+        const item={id:String(Date.now()),user:u,date:new Date().toISOString().slice(0,10),wineName:s.log,producer:w.producer,vintage:w.vintage,grape:w.grape,region:w.region,serving:s.logServing,price:+s.logPrice||0,currency:s.logCurrency,rating:s.rating,notes:s.logNotes,restaurant:s.logPlace};
+        const next=[item,...s.entries];
+        this.setState({entries:next,log:null,tab:'journal',kind:'Logged'}); this.persist(next);
+        this.writeEntry(item).then(saved=>{ if(saved&&saved.id!==item.id) this.setState(p=>({entries:p.entries.map(x=>x.id===item.id?saved:x)})); });
+        this.flash('LOGGED \u2014 '+WORDS[s.rating].toUpperCase()); },
+      entries:ent, journalEmpty:ent.length===0,
+      viewTimeline:s.view==='timeline'&&ent.length>0, viewList:s.view==='list'&&ent.length>0, viewGallery:s.view==='gallery'&&ent.length>0,
+      kindTabs:['Logged','Want to try'].map(v=>({v,label:v.toUpperCase(),style:this.monoStyle(s.kind===v)})),
+      viewTabs:[['timeline','Timeline'],['list','List'],['gallery','Gallery']].map(([v,label])=>({v,label,style:this.viewStyle(s.view===v)})),
+      setKind:e=>this.setState({kind:e.currentTarget.dataset.v}),
+      setView:e=>this.setState({view:e.currentTarget.dataset.v}),
+      search:s.search, editSearch:e=>this.setState({search:e.target.value}),
+      tabs:[['scan','SCAN'],['rec','TONIGHT'],['journal','HISTORY'],['profile','US']].map(([v,label])=>({v,label,style:this.tabStyle(s.tab===v)})),
+      setTab:e=>this.setState({tab:e.currentTarget.dataset.v}),
+      toast:s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
