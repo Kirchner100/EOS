@@ -1,3 +1,6 @@
+// Menu photo → structured wine list, via the Anthropic Messages API called
+// directly from the browser with a user-supplied key.
+
 const LS_KEY = 'eos.anthropic.v1';
 const MODEL = 'claude-sonnet-4-6';
 
@@ -82,7 +85,6 @@ export async function parsePhotos(dataUrls, key) {
       system: SYSTEM,
       messages: [
         { role: 'user', content: [...images, { type: 'text', text: PROMPT }] },
-        { role: 'assistant', content: '[' },
       ],
     }),
   });
@@ -94,9 +96,7 @@ export async function parsePhotos(dataUrls, key) {
   }
 
   const body = await res.json();
-  const raw = (body.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  // The assistant turn was prefilled with '[', so the reply resumes inside the array.
-  const text = raw.trimStart().startsWith('[') ? raw : '[' + raw;
+  const text = (body.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
   const start = text.indexOf('[');
   const end = text.lastIndexOf(']');
   if (start === -1 || end === -1) throw new Error('The model did not return a wine list');
