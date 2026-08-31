@@ -49,6 +49,10 @@ a:hover{color:#E4623F}
 
 <sc-if value="{{ scanIdle }}" hint-placeholder-val="{{ true }}">
 <div style="display:flex;flex-direction:column;gap:22px;padding-top:22px">
+<button onClick="{{ openSettings }}" style="align-self:flex-start;display:flex;align-items:center;gap:8px;background:transparent;border:none;padding:0;cursor:pointer">
+<div style="width:7px;height:7px;border-radius:50%;background:{{ syncDot }};box-shadow:0 0 8px {{ syncGlow }}"></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:{{ syncTextColor }}">{{ syncLabel }}</div>
+</button>
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:25px;line-height:1.3;color:#FBF3E7;letter-spacing:-0.4px;text-wrap:pretty">Point at the wine list.<br><span style="font-style:italic;color:#F2B85C">Eos has your back.</span></div>
 <div style="position:relative;height:320px;border:1px solid rgba(251,243,231,0.14)">
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:11px;padding:38px 30px;opacity:.4">
@@ -65,8 +69,12 @@ a:hover{color:#E4623F}
 <div style="position:absolute;bottom:18px;right:18px;width:26px;height:26px;border-bottom:1px solid #F2B85C;border-right:1px solid #F2B85C"></div>
 <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(242,184,92,0.8),transparent);animation:eosPulse 2.6s ease-in-out infinite"></div>
 </div>
-<input type="file" accept="image/*" capture="environment" multiple="{{ true }}" ref="{{ fileRef }}" onChange="{{ onFiles }}" style="display:none">
-<button onClick="{{ capture }}" style="height:52px;border:1px solid #F2B85C;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">TAKE A PHOTO / UPLOAD</button>
+<input type="file" accept="image/*" capture="environment" multiple="{{ true }}" ref="{{ cameraRef }}" onChange="{{ onFiles }}" style="display:none">
+<input type="file" accept="image/*" multiple="{{ true }}" ref="{{ libraryRef }}" onChange="{{ onFiles }}" style="display:none">
+<div style="display:flex;flex-direction:column;gap:10px">
+<button onClick="{{ takePhoto }}" style="height:52px;width:100%;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">TAKE A PHOTO</button>
+<button onClick="{{ uploadPhoto }}" style="height:52px;width:100%;border:1px solid rgba(242,184,92,0.55);background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">UPLOAD A FILE</button>
+</div>
 <div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.5);max-width:280px">Shoot as many pages as the list runs to — they merge into one parsed list.</div>
 </div>
 </sc-if>
@@ -75,14 +83,16 @@ a:hover{color:#E4623F}
 <div style="display:flex;flex-direction:column;gap:20px;padding-top:24px;animation:eosRise .3s cubic-bezier(0.22,1,0.36,1)">
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:24px;color:#FBF3E7;letter-spacing:-0.4px">{{ photoCount }} page{{ photoPlural }} captured</div>
 <div style="display:flex;gap:12px;flex-wrap:wrap">
-<input type="file" accept="image/*" capture="environment" multiple="{{ true }}" ref="{{ fileRef }}" onChange="{{ onFiles }}" style="display:none">
+<input type="file" accept="image/*" capture="environment" multiple="{{ true }}" ref="{{ cameraRef }}" onChange="{{ onFiles }}" style="display:none">
+<input type="file" accept="image/*" multiple="{{ true }}" ref="{{ libraryRef }}" onChange="{{ onFiles }}" style="display:none">
 <sc-for list="{{ photos }}" as="p">
 <div style="position:relative;width:82px;height:106px;border:1px solid rgba(242,184,92,0.4);overflow:hidden">
 {{ p.thumb }}
 <div style="position:absolute;left:0;bottom:0;padding:4px 6px;background:rgba(20,19,43,0.8);font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#F2B85C">{{ p.label }}</div>
 </div>
 </sc-for>
-<button onClick="{{ capture }}" style="width:82px;height:106px;background:transparent;border:1px dashed rgba(251,243,231,0.28);color:rgba(251,243,231,0.5);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer">+ PAGE</button>
+<button onClick="{{ takePhoto }}" style="width:82px;height:106px;background:transparent;border:1px dashed rgba(242,184,92,0.45);color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;cursor:pointer;line-height:1.5">+ PHOTO</button>
+<button onClick="{{ uploadPhoto }}" style="width:82px;height:106px;background:transparent;border:1px dashed rgba(251,243,231,0.28);color:rgba(251,243,231,0.5);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1px;cursor:pointer;line-height:1.5">+ UPLOAD</button>
 </div>
 <button onClick="{{ parseMenu }}" style="height:52px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">READ THIS LIST</button>
 <button onClick="{{ reset }}" style="height:34px;border:none;background:transparent;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">START OVER</button>
@@ -193,10 +203,13 @@ a:hover{color:#E4623F}
 <sc-if value="{{ isJournal }}" hint-placeholder-val="{{ true }}">
 <div style="display:flex;flex-direction:column">
 
-<div style="display:flex;gap:22px;padding:16px 0 0">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:16px 0 0">
+<div style="display:flex;gap:22px">
 <sc-for list="{{ viewTabs }}" as="t" hint-placeholder-count="3">
 <button data-v="{{ t.v }}" onClick="{{ setView }}" style="{{ t.style }}">{{ t.label }}</button>
 </sc-for>
+</div>
+<button onClick="{{ openManual }}" style="flex:none;background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.2px;color:#F2B85C;border-bottom:1px solid rgba(242,184,92,0.5)">+ ADD A BOTTLE</button>
 </div>
 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0;border-top:1px solid rgba(251,243,231,0.14);border-bottom:1px solid rgba(251,243,231,0.14);margin-top:14px">
 <input value="{{ search }}" onChange="{{ editSearch }}" placeholder="Grape, region, producer, place" style="flex:1;min-width:0;background:transparent;border:none;outline:none;font-size:12.5px;color:#FBF3E7;padding:0">
@@ -208,16 +221,23 @@ a:hover{color:#E4623F}
 </div>
 
 <sc-if value="{{ journalEmpty }}" hint-placeholder-val="{{ true }}">
-<div style="padding:44px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;color:rgba(251,243,231,0.35)">NOTHING MATCHES THAT YET</div>
+<div style="padding:38px 0;display:flex;flex-direction:column;gap:9px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-style:italic;font-size:21px;line-height:1.35;color:rgba(251,243,231,0.7);letter-spacing:-0.3px;max-width:280px;text-wrap:pretty">{{ emptyTitle }}</div>
+<div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.42);max-width:265px">{{ emptyNote }}</div>
+</div>
 </sc-if>
 
 <sc-if value="{{ viewTimeline }}" hint-placeholder-val="{{ true }}">
 <div style="display:flex;flex-direction:column">
 <sc-for list="{{ entries }}" as="e" hint-placeholder-count="4">
-<div style="display:flex;gap:18px;padding:22px 0;border-bottom:1px solid rgba(251,243,231,0.1)">
+<div style="border-bottom:1px solid rgba(251,243,231,0.1)">
+<div data-id="{{ e.id }}" onClick="{{ toggleEntry }}" style="display:flex;gap:18px;padding:22px 0;cursor:pointer">
 <div style="flex:none;width:52px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.5;white-space:pre-line;color:rgba(242,184,92,0.75)">{{ e.dateStack }}</div>
 <div style="flex:1;min-width:0">
-<div style="font-family:'Fraunces',serif;font-weight:400;font-size:23px;line-height:1.15;color:#FBF3E7;letter-spacing:-0.5px">{{ e.wineName }}</div>
+<div style="display:flex;align-items:baseline;gap:10px">
+<div style="flex:1;min-width:0;font-family:'Fraunces',serif;font-weight:400;font-size:23px;line-height:1.15;color:#FBF3E7;letter-spacing:-0.5px">{{ e.wineName }}</div>
+<div style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(242,184,92,0.7)">{{ e.caret }}</div>
+</div>
 <div style="font-size:12px;color:rgba(251,243,231,0.5);margin-top:6px">{{ e.sub }}</div>
 <div style="font-size:13px;line-height:1.55;color:rgba(251,243,231,0.76);margin-top:9px;font-style:italic;text-wrap:pretty">{{ e.notes }}</div>
 <div style="display:flex;align-items:center;gap:10px;margin-top:12px">
@@ -230,6 +250,55 @@ a:hover{color:#E4623F}
 </div>
 </div>
 </div>
+<sc-if value="{{ e.expanded }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 0 24px 70px;animation:eosRise .3s cubic-bezier(0.22,1,0.36,1)">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.6px;color:rgba(242,184,92,0.7);padding-bottom:6px">THE BOTTLE</div>
+<sc-for list="{{ e.facts }}" as="f" hint-placeholder-count="4">
+<div style="display:flex;gap:14px;padding:7px 0;border-top:1px solid rgba(251,243,231,0.08)">
+<div style="flex:none;width:76px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.1px;color:rgba(251,243,231,0.38);padding-top:2px">{{ f.k }}</div>
+<div style="flex:1;min-width:0;font-size:12.5px;line-height:1.45;color:rgba(251,243,231,0.82)">{{ f.v }}</div>
+</div>
+</sc-for>
+
+<sc-if value="{{ e.hasInfo }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:16px;padding-top:22px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.6px;color:rgba(242,184,92,0.7)">WHAT THIS WINE IS</div>
+<div style="font-size:13.5px;line-height:1.6;color:rgba(251,243,231,0.86);text-wrap:pretty">{{ e.info.summary }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ e.info.style }}" as="t" hint-placeholder-count="3">
+<div style="border:1px solid rgba(251,243,231,0.2);padding:5px 9px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.8px;color:rgba(251,243,231,0.7);text-transform:uppercase">{{ t }}</div>
+</sc-for>
+</div>
+<sc-for list="{{ e.infoBlocks }}" as="b" hint-placeholder-count="4">
+<div style="display:flex;flex-direction:column;gap:5px;border-top:1px solid rgba(251,243,231,0.08);padding-top:13px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">{{ b.k }}</div>
+<div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.78);text-wrap:pretty">{{ b.v }}</div>
+</div>
+</sc-for>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:rgba(251,243,231,0.28)">WRITTEN FOR YOU BY EOS · SAVED ON THIS DEVICE</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ e.infoLoading }}" hint-placeholder-val="{{ false }}">
+<div style="padding-top:20px;display:flex;flex-direction:column;gap:12px">
+<div style="width:100%;height:1px;background:linear-gradient(90deg,#F2B85C,transparent);animation:eosPulse 1.3s ease-in-out infinite"></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">READING UP ON THIS WINE</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ e.showLearn }}" hint-placeholder-val="{{ false }}">
+<div style="padding-top:20px;display:flex;flex-direction:column;gap:9px;align-items:flex-start">
+<button data-id="{{ e.id }}" onClick="{{ learnWine }}" style="height:42px;padding:0 18px;border:1px solid #F2B85C;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.8px;cursor:pointer">TELL ME ABOUT THIS WINE</button>
+<div style="font-size:11.5px;line-height:1.5;color:rgba(251,243,231,0.4);max-width:250px">{{ e.learnHint }}</div>
+</div>
+</sc-if>
+
+<sc-if value="{{ e.infoError }}" hint-placeholder-val="{{ false }}">
+<div style="padding-top:16px;font-size:12px;line-height:1.5;color:#F09274">{{ e.infoMsg }}</div>
+</sc-if>
+</div>
+</sc-if>
+</div>
 </sc-for>
 </div>
 </sc-if>
@@ -237,7 +306,8 @@ a:hover{color:#E4623F}
 <sc-if value="{{ viewList }}" hint-placeholder-val="{{ true }}">
 <div style="display:flex;flex-direction:column">
 <sc-for list="{{ entries }}" as="e" hint-placeholder-count="5">
-<div style="padding:15px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;align-items:baseline;gap:12px">
+<div style="border-bottom:1px solid rgba(251,243,231,0.1)">
+<div data-id="{{ e.id }}" onClick="{{ toggleEntry }}" style="padding:15px 0;display:flex;align-items:baseline;gap:12px;cursor:pointer">
 <div style="flex:1;min-width:0">
 <div style="font-family:'Fraunces',serif;font-weight:400;font-size:18px;color:#FBF3E7;letter-spacing:-0.3px">{{ e.wineName }}</div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:0.8px;color:rgba(251,243,231,0.45);margin-top:5px">{{ e.subUpper }}</div>
@@ -246,6 +316,29 @@ a:hover{color:#E4623F}
 <div style="position:relative;width:52px;height:2px;background:rgba(251,243,231,0.14)"><div style="position:absolute;left:0;top:0;height:2px;background:linear-gradient(90deg,#7A2438,#F2B85C);width:{{ e.sunPct }}"></div></div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:{{ e.scoreColor }};width:26px;text-align:right">{{ e.scoreLabel }}</div>
 </div>
+</div>
+<sc-if value="{{ e.expanded }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 0 20px;animation:eosRise .3s cubic-bezier(0.22,1,0.36,1)">
+<sc-for list="{{ e.facts }}" as="f" hint-placeholder-count="4">
+<div style="display:flex;gap:14px;padding:7px 0;border-top:1px solid rgba(251,243,231,0.08)">
+<div style="flex:none;width:76px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.1px;color:rgba(251,243,231,0.38);padding-top:2px">{{ f.k }}</div>
+<div style="flex:1;min-width:0;font-size:12.5px;line-height:1.45;color:rgba(251,243,231,0.82)">{{ f.v }}</div>
+</div>
+</sc-for>
+<sc-if value="{{ e.hasInfo }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:13px;line-height:1.6;color:rgba(251,243,231,0.84);padding-top:16px;text-wrap:pretty">{{ e.info.summary }}</div>
+</sc-if>
+<sc-if value="{{ e.infoLoading }}" hint-placeholder-val="{{ false }}">
+<div style="padding-top:16px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">READING UP ON THIS WINE</div>
+</sc-if>
+<sc-if value="{{ e.showLearn }}" hint-placeholder-val="{{ false }}">
+<button data-id="{{ e.id }}" onClick="{{ learnWine }}" style="margin-top:16px;height:38px;padding:0 16px;border:1px solid rgba(242,184,92,0.6);background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.6px;cursor:pointer">TELL ME ABOUT THIS WINE</button>
+</sc-if>
+<sc-if value="{{ e.infoError }}" hint-placeholder-val="{{ false }}">
+<div style="padding-top:14px;font-size:12px;line-height:1.5;color:#F09274">{{ e.infoMsg }}</div>
+</sc-if>
+</div>
+</sc-if>
 </div>
 </sc-for>
 </div>
@@ -302,6 +395,12 @@ a:hover{color:#E4623F}
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:25px;color:#FBF3E7;letter-spacing:-0.5px">{{ profilePossCap }} palate</div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.2px;color:rgba(251,243,231,0.4);margin-top:8px">GRAPE × REGION, WEIGHTED BY RATING AND RECENCY</div>
 </div>
+<sc-if value="{{ tasteEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="padding:30px 0;display:flex;flex-direction:column;gap:10px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-style:italic;font-size:21px;line-height:1.35;color:rgba(251,243,231,0.7);letter-spacing:-0.3px;max-width:290px;text-wrap:pretty">Nothing to weigh yet. Rate a bottle and this fills itself in.</div>
+<div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.42);max-width:270px">Every grape and region you rate gets scored here, recent bottles counting for more than old ones.</div>
+</div>
+</sc-if>
 <div style="display:flex;flex-direction:column">
 <sc-for list="{{ tasteRows }}" as="t" hint-placeholder-count="4">
 <div style="padding:15px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:8px">
@@ -411,10 +510,27 @@ a:hover{color:#E4623F}
 <div onClick="{{ closeLog }}" style="position:absolute;inset:0;background:rgba(11,10,24,0.78)"></div>
 <div style="position:relative;background:#191833;border-top:1px solid #F2B85C;padding:22px 26px 44px;display:flex;flex-direction:column;gap:20px;max-height:92%;overflow-y:auto;animation:eosRise .28s cubic-bezier(0.22,1,0.36,1)">
 <div style="display:flex;align-items:baseline;justify-content:space-between">
-<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.8px;color:rgba(242,184,92,0.8)">WE CHOSE THIS</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.8px;color:rgba(242,184,92,0.8)">{{ logKicker }}</div>
 <button onClick="{{ closeLog }}" style="background:transparent;border:none;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">CLOSE</button>
 </div>
+<sc-if value="{{ logFromMenu }}" hint-placeholder-val="{{ true }}">
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:26px;color:#FBF3E7;letter-spacing:-0.6px;line-height:1.15">{{ logName }}</div>
+</sc-if>
+<sc-if value="{{ logManual }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:2px">
+<input value="{{ mName }}" onChange="{{ editMName }}" placeholder="Wine or sake" style="background:transparent;border:none;border-bottom:1px solid rgba(242,184,92,0.55);outline:none;font-family:'Fraunces',serif;font-weight:300;font-size:24px;letter-spacing:-0.5px;color:#FBF3E7;padding:6px 0">
+<input value="{{ mProducer }}" onChange="{{ editMProducer }}" placeholder="Producer or estate" style="background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.16);outline:none;font-size:13px;color:#FBF3E7;padding:9px 0">
+<div style="display:flex;gap:14px">
+<input value="{{ mVintage }}" onChange="{{ editMVintage }}" placeholder="Vintage" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.16);outline:none;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#FBF3E7;padding:9px 0">
+<input value="{{ mDate }}" onChange="{{ editMDate }}" type="date" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.16);outline:none;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#FBF3E7;padding:9px 0">
+</div>
+<div style="display:flex;gap:14px">
+<input value="{{ mGrape }}" onChange="{{ editMGrape }}" placeholder="Grape" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.16);outline:none;font-size:13px;color:#FBF3E7;padding:9px 0">
+<input value="{{ mRegion }}" onChange="{{ editMRegion }}" placeholder="Region" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.16);outline:none;font-size:13px;color:#FBF3E7;padding:9px 0">
+</div>
+<div style="font-size:11.5px;line-height:1.5;color:rgba(251,243,231,0.35);padding-top:9px">Name is enough. The rest sharpens your taste profile and the primer Eos writes later.</div>
+</div>
+</sc-if>
 
 <div style="display:flex;flex-direction:column;gap:8px">
 <div style="display:flex;justify-content:space-between;align-items:baseline">
@@ -471,16 +587,7 @@ const MENU=[
  {name:'Barbaresco',producer:'Produttori del Barbaresco',vintage:'2018',grape:'Nebbiolo',region:'Piedmont',serving:'Bottle',price:'€95'},
  {name:'Moschofilero',producer:'Tselepos',vintage:'2022',grape:'Moschofilero',region:'Mantinia',serving:'Glass',price:'€11'}
 ];
-const SEED=[
- {id:'1',user:'Lisa',date:'2026-08-14',wineName:'Santorini Assyrtiko',producer:'Domaine Sigalas',vintage:'2022',grape:'Assyrtiko',region:'Santorini',serving:'Bottle',price:46,currency:'€',rating:5,notes:'Salt and lemon pith. We finished it before the food came.',restaurant:'Kanella, Athens'},
- {id:'2',user:'Marios',date:'2026-08-02',wineName:'Xinomavro Naoussa',producer:'Thymiopoulos',vintage:'2019',grape:'Xinomavro',region:'Naoussa',serving:'Bottle',price:52,currency:'€',rating:5,notes:'Tomato leaf, dried rose. The one to beat.',restaurant:'Oinoscent'},
- {id:'3',user:'Lisa',date:'2026-07-21',wineName:'Etna Rosso',producer:'Graci',vintage:'2021',grape:'Nerello Mascalese',region:'Etna',serving:'Glass',price:13,currency:'€',rating:4,notes:'Ash and cherry. Lighter than expected.',restaurant:'Bar Basso'},
- {id:'4',user:'Marios',date:'2026-07-09',wineName:'Barbaresco Asili',producer:'Produttori del Barbaresco',vintage:'2018',grape:'Nebbiolo',region:'Piedmont',serving:'Bottle',price:88,currency:'€',rating:4,notes:'Needed an hour. Worth the wait.',restaurant:'Da Cesare'},
- {id:'5',user:'Lisa',date:'2026-06-28',wineName:'Chablis 1er Cru',producer:'Domaine Bessin',vintage:'2020',grape:'Chardonnay',region:'Burgundy',serving:'Bottle',price:64,currency:'€',rating:2,notes:'Flat and buttery. Not our shape of white.',restaurant:'Le Rigmarole'},
- {id:'6',user:'Marios',date:'2026-06-11',wineName:'Agiorgitiko',producer:'Gaia',vintage:'2021',grape:'Agiorgitiko',region:'Nemea',serving:'Glass',price:11,currency:'€',rating:3,notes:'Fine, forgettable.',restaurant:'Vintage Wine Bar'},
- {id:'w1',user:'Lisa',date:'2026-08-19',wineName:'Barolo Cannubi',producer:'Luciano Sandrone',vintage:'2016',grape:'Nebbiolo',region:'Piedmont',rating:null,notes:'',restaurant:'',notedFrom:'Recommended by the sommelier at Kanella'},
- {id:'w2',user:'Marios',date:'2026-08-06',wineName:'Vin Santo di Carmignano',producer:'Capezzana',vintage:'2015',grape:'Trebbiano',region:'Tuscany',rating:null,notes:'',restaurant:'',notedFrom:'Read about it on the flight'}
-];
+const SEED=[];
 const RECS={
  Lisa:[
   {i:0,match:'Loved similar before',kind:'loved',reason:"You gave Sigalas Assyrtiko a 5 two weeks ago. Same island, same salinity, a shade riper — this is the safe joy of the list."},
@@ -527,6 +634,7 @@ class Component extends DCLogic {
     view:this.props.journalView||'timeline', who:'Lisa', kind:'Logged', search:'',
     log:null, rating:4, logPrice:'', logCurrency:'€', logServing:'Bottle', logNotes:'', logPlace:'', toast:'',
     settingsOpen:false, notes:{},
+    openId:null, infos:{}, infoState:{}, infoMsg:{},
     sbState:'local',
     sbUrl:'https://hfzgnfdoyehoheiuimac.supabase.co',
     sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmemduZmRveWVob2hlaXVpbWFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMDI4ODUsImV4cCI6MjEwMzY3ODg4NX0.LqZSkb2NCTTi1wRn2lgN0mx44gG5zM8-yyHULtUa5DE'.trim(), sbMsg:''
@@ -534,8 +642,77 @@ class Component extends DCLogic {
   flash(t){ this.setState({toast:t}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2200); }
   async store(){ if(!this._store) this._store=await import('./supabase-store.js'); return this._store; }
   async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js'); return this._vision; }
-  fileRef=React.createRef();
-  pickFiles(){ const el=this.fileRef.current; if(el){ el.value=''; el.click(); } }
+  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js'); return this._lore; }
+  async openEntry(id){
+    const cur=this.state.openId;
+    if(cur===id){ this.setState({openId:null}); return; }
+    this.setState({openId:id});
+    const e=this.state.entries.find(x=>x.id===id); if(!e) return;
+    try{
+      const L=await this.lore(); const k=L.wineKey(e); const hit=L.readCached(e);
+      if(hit) this.setState(p=>({infos:{...p.infos,[k]:hit}}));
+    }catch(err){}
+  }
+  async learn(id){
+    const e=this.state.entries.find(x=>x.id===id); if(!e) return;
+    const L=await this.lore(), k=L.wineKey(e);
+    let key=this.state.apiKey;
+    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(err){} }
+    if(!key){ this.setState({settingsOpen:true}); this.flash('ADD YOUR API KEY FIRST'); return; }
+    this.setState(p=>({infoState:{...p.infoState,[k]:'loading'},infoMsg:{...p.infoMsg,[k]:''}}));
+    let shared=null;
+    try{ const S=await this.store();
+      if(S.isConnected()) shared={get:kk=>S.fetchInfo(kk),put:(kk,i)=>S.saveInfo(kk,i)};
+    }catch(err){}
+    try{
+      const info=await L.fetchInfo(e,key,shared);
+      this.setState(p=>({infos:{...p.infos,[k]:info},infoState:{...p.infoState,[k]:'done'}}));
+    }catch(err){
+      this.setState(p=>({infoState:{...p.infoState,[k]:'error'},
+        infoMsg:{...p.infoMsg,[k]:(err&&err.message)||'Could not look that up.'}}));
+    }
+  }
+  // Grape × region, weighted by rating and recency. Built from what has actually
+  // been logged, so it is empty until the first bottle is rated.
+  buildTaste(prof){
+    const now=Date.now(), bag={};
+    this.state.entries.forEach(e=>{
+      if(e.rating==null) return;
+      if(prof!=='Both'&&e.user!==prof&&e.user!=='Both') return;
+      const g=(e.grape||'').trim(), r=(e.region||'').trim();
+      if(!g&&!r) return;
+      const label=[g,r].filter(Boolean).join(' \u00b7 ');
+      const months=Math.max(0,(now-new Date(e.date+'T12:00:00').getTime())/2.63e9);
+      const w=1/(1+months/18);
+      const b=bag[label]||(bag[label]={w:0,sum:0,n:0});
+      b.w+=w; b.sum+=e.rating*w; b.n++;
+    });
+    return Object.keys(bag).map(label=>{
+      const b=bag[label], score=b.sum/b.w;
+      return {label,score:score.toFixed(1),pct:Math.round((score-1)/4*100)+'%',n:b.n};
+    }).sort((a,b)=>b.score-a.score||b.n-a.n).slice(0,6);
+  }
+  wineFacts(e){
+    const f=[];
+    if(e.producer) f.push({k:'PRODUCER',v:e.producer});
+    if(e.vintage) f.push({k:'VINTAGE',v:e.vintage});
+    if(e.grape) f.push({k:'GRAPE',v:e.grape});
+    if(e.region) f.push({k:'REGION',v:e.region});
+    if(e.serving) f.push({k:'SERVED',v:e.serving});
+    if(e.price) f.push({k:'PRICE',v:(e.currency||'')+e.price});
+    if(e.restaurant) f.push({k:'WHERE',v:e.restaurant});
+    if(e.notedFrom) f.push({k:'NOTED',v:e.notedFrom});
+    if(e.rating) f.push({k:'VERDICT',v:WORDS[Math.round(e.rating)]||''});
+    return f;
+  }
+  infoBlocks(i){
+    return [['THE GRAPE',i.grape],['THE PLACE',i.place],['THE YEAR',i.vintage],
+      ['DRINK IT WITH',i.pairing],['KEEP OR OPEN',i.aging],['WHAT IT COST',i.priceContext]]
+      .filter(([,v])=>v).map(([k,v])=>({k,v}));
+  }
+  cameraRef=React.createRef();
+  libraryRef=React.createRef();
+  pickFiles(which){ const el=(which==='library'?this.libraryRef:this.cameraRef).current; if(el){ el.value=''; el.click(); } }
   async handleFiles(ev){
     const files=[...(ev.target.files||[])]; if(!files.length) return;
     try{
@@ -565,6 +742,7 @@ class Component extends DCLogic {
   async componentDidMount(){
     try{ const v=await this.vision(); const k=v.readKey(); if(k) this.setState({apiKey:k}); }catch(err){}
     try{ const n=JSON.parse(localStorage.getItem('eos.notes.v1')); if(n) this.setState({notes:n}); }catch(err){}
+    try{ const c=JSON.parse(localStorage.getItem('eos.wineinfo.v2')); if(c) this.setState({infos:c}); }catch(err){}
     let st; try{ st=await this.store(); }catch(err){ return; }
     const local=st.readLocal(); if(local&&local.length) this.setState({entries:local});
     const cfg=st.readConfig();
@@ -581,6 +759,8 @@ class Component extends DCLogic {
       const rows=await st.fetchEntries();
       this.setState({sbState:'connected',entries:rows.length?rows:this.state.entries,
         sbMsg:rows.length?'':'Table is empty — use PUSH LOCAL to send this phone\u2019s entries up.'});
+      try{ const map=await st.fetchAllInfo(); const L=await this.lore();
+        this.setState({infos:L.mergeCache(map)}); }catch(err){}
       if(this._unsub) this._unsub();
       this._unsub=st.subscribe(async()=>{ try{ this.setState({entries:await st.fetchEntries()}); }catch(e){} });
     }catch(err){
@@ -607,11 +787,19 @@ class Component extends DCLogic {
     }).map(e=>{
       const d=new Date(e.date+'T12:00:00'), r=e.rating;
       const sub=[e.producer&&e.producer+' '+(e.vintage||''),e.region,e.restaurant].filter(Boolean).join(' · ');
+      const wk=[e.wineName,e.producer,e.vintage].filter(Boolean).join('|').toLowerCase();
+      const info=s.infos[wk], st=s.infoState[wk];
       return {...e, sunPct:r?((r-1)/4*100||6)+'%':'0%',
         scoreLabel:r?r.toFixed(1):'—', scoreColor:r?(r>=3?GOLD:'rgba(251,243,231,0.5)'):'rgba(251,243,231,0.4)',
         dateStack:d.toLocaleDateString('en-GB',{day:'2-digit'})+'\n'+d.toLocaleDateString('en-GB',{month:'short'}).toUpperCase(),
         sub, subUpper:sub.toUpperCase(), whoUpper:e.user.toUpperCase(),
         notes:e.notes||e.notedFrom||'',
+        expanded:s.openId===e.id, caret:s.openId===e.id?'\u2013':'+',
+        facts:this.wineFacts(e),
+        info:info||{summary:'',style:[]}, hasInfo:!!info, infoBlocks:info?this.infoBlocks(info):[],
+        infoLoading:st==='loading', infoError:st==='error', infoMsg:s.infoMsg[wk]||'',
+        showLearn:!info&&st!=='loading',
+        learnHint:'A plain-English primer on the grape, the place and the year. Written once, then kept.',
         tile:r>=5?'#3A1725':r>=4?'#2C1730':r>=3?'#1F1A33':'#181731'};
     });
     const mine=s.entries.filter(e=>e.rating!=null&&(prof==='Both'||e.user===prof||e.user==='Both'))
@@ -619,6 +807,7 @@ class Component extends DCLogic {
       .map(e=>({...e,scoreLabel:e.rating.toFixed(1),
         subUpper:[e.producer&&e.producer+' '+(e.vintage||''),e.region,e.restaurant].filter(Boolean).join(' · ').toUpperCase(),
         notes:e.notes||''}));
+    const taste=this.buildTaste(prof);
     const loved=mine.filter(e=>e.rating>=4).slice(0,3);
     const missed=mine.filter(e=>e.rating<=2).slice(0,2);
     const recList=(RECS[prof]||[]).map(r=>{
@@ -645,7 +834,9 @@ class Component extends DCLogic {
         style:{width:'100%',height:'100%',objectFit:'cover',opacity:.85}})})),
       photoCount:s.photos.length, photoPlural:s.photos.length===1?'':'s',
       wines:s.wines.map(w=>({...w,servingShort:w.serving.toUpperCase()})), wineCount:s.wines.length, budget:s.budget, occasion:s.occasion,
-      fileRef:this.fileRef, capture:()=>this.pickFiles(), onFiles:e=>this.handleFiles(e),
+      cameraRef:this.cameraRef, libraryRef:this.libraryRef,
+      takePhoto:()=>this.pickFiles('camera'), uploadPhoto:()=>this.pickFiles('library'),
+      capture:()=>this.pickFiles('camera'), onFiles:e=>this.handleFiles(e),
       reset:()=>this.setState({scan:'idle',photos:[],scanMsg:''}),
       parseMenu:()=>this.runParse(), scanMsg:s.scanMsg,
       apiKey:s.apiKey, editApiKey:e=>{ const v=e.target.value; this.setState({apiKey:v});
@@ -659,8 +850,8 @@ class Component extends DCLogic {
       recommend:()=>{ this.setState({tab:'rec',rec:'thinking'}); setTimeout(()=>this.setState({rec:'done'}),1600); },
       goScan:()=>this.setState({tab:'scan'}),
       recEmpty:s.rec==='empty', recThinking:s.rec==='thinking', recDone:s.rec==='done', recs:recList,
-      tasteChips:(TASTE[prof]||[]).slice(0,3).map(t=>({label:t.label.split(' · ')[0].toUpperCase(),score:t.score})),
-      tasteRows:TASTE[prof]||[],
+      tasteChips:taste.slice(0,3).map(t=>({label:t.label.split(' · ')[0].toUpperCase(),score:t.score})),
+      tasteRows:taste, tasteEmpty:taste.length===0,
       settingRows:[{label:'Model',value:'SONNET-4-6'},{label:'Export backup',value:s.entries.length+' ENTRIES'},{label:'Import backup',value:'MERGE'}],
       sbUrl:s.sbUrl, sbKey:s.sbKey, sbMsg:s.sbMsg,
       sbStatus:{local:'LOCAL ONLY',connecting:'CONNECTING…',connected:'SUPABASE · LIVE',error:'NOT CONNECTED'}[s.sbState],
@@ -682,7 +873,24 @@ class Component extends DCLogic {
         const next=[item,...s.entries]; this.setState({entries:next}); this.persist(next);
         this.writeEntry(item).then(saved=>{ if(saved&&saved.id!==item.id) this.setState(p=>({entries:p.entries.map(x=>x.id===item.id?saved:x)})); });
         this.flash('SAVED TO '+(prof==='Both'?'OUR':prof.toUpperCase()+'\u2019S')+' WANT-TO-TRY'); },
-      logOpen:!!s.log, logName:s.log, closeLog:()=>this.setState({log:null}),
+      logOpen:!!s.log, logName:s.log, closeLog:()=>this.setState({log:null,logManual:false}),
+      logManual:!!s.logManual, logFromMenu:!!s.log&&!s.logManual,
+      logKicker:s.logManual?'A BOTTLE WE HAD':'WE CHOSE THIS',
+      openManual:()=>this.setState({log:'manual',logManual:true,rating:4,logUser:prof,
+        logPrice:'',logServing:'Bottle',logNotes:'',logPlace:'',
+        mName:'',mProducer:'',mVintage:'',mGrape:'',mRegion:'',mDate:new Date().toISOString().slice(0,10)}),
+      mName:s.mName||'', mProducer:s.mProducer||'', mVintage:s.mVintage||'',
+      mGrape:s.mGrape||'', mRegion:s.mRegion||'', mDate:s.mDate||new Date().toISOString().slice(0,10),
+      editMName:e=>this.setState({mName:e.target.value}),
+      editMProducer:e=>this.setState({mProducer:e.target.value}),
+      editMVintage:e=>this.setState({mVintage:e.target.value}),
+      editMGrape:e=>this.setState({mGrape:e.target.value}),
+      editMRegion:e=>this.setState({mRegion:e.target.value}),
+      editMDate:e=>this.setState({mDate:e.target.value}),
+      syncDot:s.sbState==='connected'?'#63C68A':s.sbState==='connecting'?'#F2B85C':s.sbState==='error'?'#F09274':'rgba(251,243,231,0.3)',
+      syncGlow:s.sbState==='connected'?'rgba(99,198,138,0.7)':'transparent',
+      syncTextColor:s.sbState==='connected'?'#63C68A':'rgba(251,243,231,0.4)',
+      syncLabel:{connected:'LIVE \u00b7 BOTH PHONES IN SYNC',connecting:'CONNECTING\u2026',error:'NOT SYNCED \u2014 TAP TO FIX',local:'THIS PHONE ONLY \u2014 TAP TO SYNC'}[s.sbState]||'THIS PHONE ONLY',
       dialStops:[1,2,3,4,5].map(v=>({v})), sunPct:((s.rating-1)/4*100)+'%', ratingWord:WORDS[s.rating],
       setRating:e=>this.setState({rating:+e.currentTarget.dataset.v}),
       logPrice:s.logPrice, logCurrency:s.logCurrency, logServing:s.logServing, logServingUpper:s.logServing.toUpperCase(),
@@ -692,13 +900,28 @@ class Component extends DCLogic {
       editLogNotes:e=>this.setState({logNotes:e.target.value}),
       cycleCurrency:()=>this.setState(p=>({logCurrency:{'€':'$','$':'£','£':'€'}[p.logCurrency]})),
       cycleServing:()=>this.setState(p=>({logServing:p.logServing==='Bottle'?'Glass':'Bottle'})),
-      saveLog:()=>{ const w=s.wines.find(x=>x.name===s.log)||{}, u=s.logUser||prof;
-        const item={id:String(Date.now()),user:u,date:new Date().toISOString().slice(0,10),wineName:s.log,producer:w.producer,vintage:w.vintage,grape:w.grape,region:w.region,serving:s.logServing,price:+s.logPrice||0,currency:s.logCurrency,rating:s.rating,notes:s.logNotes,restaurant:s.logPlace};
-        const next=[item,...s.entries];
-        this.setState({entries:next,log:null,tab:'journal',kind:'Logged'}); this.persist(next);
+      saveLog:()=>{ const man=!!s.logManual, w=man?{}:(s.wines.find(x=>x.name===s.log)||{}), u=s.logUser||prof;
+        const name=man?(s.mName||'').trim():s.log;
+        if(man&&!name){ this.flash('GIVE IT A NAME FIRST'); return; }
+        const item={id:String(Date.now()),user:u,
+          date:man?(s.mDate||new Date().toISOString().slice(0,10)):new Date().toISOString().slice(0,10),
+          wineName:name,
+          producer:man?(s.mProducer||'').trim():w.producer,
+          vintage:man?(s.mVintage||'').trim():w.vintage,
+          grape:man?(s.mGrape||'').trim():w.grape,
+          region:man?(s.mRegion||'').trim():w.region,
+          serving:s.logServing,price:+s.logPrice||0,currency:s.logCurrency,rating:s.rating,notes:s.logNotes,restaurant:s.logPlace};
+        const next=[item,...s.entries].sort((a,b)=>b.date.localeCompare(a.date));
+        this.setState({entries:next,log:null,logManual:false,tab:'journal',kind:'Logged'}); this.persist(next);
         this.writeEntry(item).then(saved=>{ if(saved&&saved.id!==item.id) this.setState(p=>({entries:p.entries.map(x=>x.id===item.id?saved:x)})); });
         this.flash('LOGGED \u2014 '+WORDS[s.rating].toUpperCase()); },
       entries:ent, journalEmpty:ent.length===0,
+      emptyTitle:s.entries.length===0?'Nothing logged yet.':(s.search.trim()?'Nothing matches that.':(s.kind==='Logged'?'Nothing rated yet.':'Nothing on the want-to-try list.')),
+      emptyNote:s.entries.length===0
+        ?'Scan a wine list, pick something, and rate it when the glass is empty. Everything you log lands here.'
+        :(s.search.trim()?'Try a grape, a region, a producer or the name of the place.':'Log a bottle from the Scan tab and it shows up here.'),
+      toggleEntry:e=>this.openEntry(e.currentTarget.dataset.id),
+      learnWine:e=>{ e.stopPropagation(); this.learn(e.currentTarget.dataset.id); },
       viewTimeline:s.view==='timeline'&&ent.length>0, viewList:s.view==='list'&&ent.length>0, viewGallery:s.view==='gallery'&&ent.length>0,
       kindTabs:['Logged','Want to try'].map(v=>({v,label:v.toUpperCase(),style:this.monoStyle(s.kind===v)})),
       viewTabs:[['timeline','Timeline'],['list','List'],['gallery','Gallery']].map(([v,label])=>({v,label,style:this.viewStyle(s.view===v)})),
@@ -714,4 +937,3 @@ class Component extends DCLogic {
 </script>
 </body>
 </html>
-
