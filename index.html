@@ -484,7 +484,7 @@ a:hover{color:#E4623F}
 <div style="border-top:1px solid rgba(251,243,231,0.14);padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:4px">
 <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">ANTHROPIC API KEY</div>
 <input value="{{ apiKey }}" onChange="{{ editApiKey }}" placeholder="sk-ant-…" style="background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FBF3E7;padding:2px 0">
-<div style="font-size:11.5px;line-height:1.5;color:rgba(251,243,231,0.38);padding-top:5px">Kept on this phone only. Without it, Scan shows the demo list.</div>
+<div style="font-size:11.5px;line-height:1.5;color:rgba(251,243,231,0.38);padding-top:5px">Kept on this phone only. Without it, Eos cannot read a list or write taste notes.</div>
 </div>
 <div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">SETTINGS</div>
 <div style="display:flex;flex-direction:column;border-top:1px solid rgba(251,243,231,0.14)">
@@ -595,37 +595,7 @@ a:hover{color:#E4623F}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:940},&quot;startProfile&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Lisa&quot;,&quot;Marios&quot;,&quot;Both&quot;],&quot;default&quot;:&quot;Lisa&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;journalView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;timeline&quot;,&quot;list&quot;,&quot;gallery&quot;],&quot;default&quot;:&quot;timeline&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 const GOLD='#F2B85C',CREAM='#FBF3E7';
-const MENU=[
- {name:'Assyrtiko "Santorini"',producer:'Estate Argyros',vintage:'2021',grape:'Assyrtiko',region:'Santorini',serving:'Glass',price:'€14'},
- {name:'Xinomavro Old Vines',producer:'Kir-Yianni',vintage:'2019',grape:'Xinomavro',region:'Naoussa',serving:'Bottle',price:'€58'},
- {name:'Etna Rosso',producer:'Passopisciaro',vintage:'2020',grape:'Nerello Mascalese',region:'Etna',serving:'Bottle',price:'€72'},
- {name:'Malagousia',producer:'Ktima Gerovassiliou',vintage:'2022',grape:'Malagousia',region:'Epanomi',serving:'Glass',price:'€12'},
- {name:'Barbaresco',producer:'Produttori del Barbaresco',vintage:'2018',grape:'Nebbiolo',region:'Piedmont',serving:'Bottle',price:'€95'},
- {name:'Moschofilero',producer:'Tselepos',vintage:'2022',grape:'Moschofilero',region:'Mantinia',serving:'Glass',price:'€11'}
-];
 const SEED=[];
-const RECS={
- Lisa:[
-  {i:0,match:'Loved similar before',kind:'loved',reason:"You gave Sigalas Assyrtiko a 5 two weeks ago. Same island, same salinity, a shade riper — this is the safe joy of the list."},
-  {i:2,match:'New but promising',kind:'new',reason:"Graci's Etna scored a 4 on the glass alone. Passopisciaro is the more serious grower on the same slope and it's the only red here under €80."},
-  {i:4,match:'Wishlist match',kind:'wish',reason:"Nebbiolo has been on your want-to-try since Sandrone. This is the cooperative bottling — the honest introduction, and it's on the list tonight."}
- ],
- Marios:[
-  {i:1,match:'Loved similar before',kind:'loved',reason:"Thymiopoulos Xinomavro is your highest-rated bottle. Kir-Yianni's old vines are the plusher cousin — same tomato-leaf grip, softer edges."},
-  {i:4,match:'Wishlist match',kind:'wish',reason:"You rated Produttori's Asili a 4 in July. This is the straight Barbaresco from the same house, €7 cheaper than what you paid."},
-  {i:3,match:'Crowd pleaser',kind:'crowd',reason:"If Lisa is drinking too: Malagousia is the one white on this list that no one at the table argues about. Peach without sweetness."}
- ],
- Both:[
-  {i:4,match:'Loved similar before',kind:'loved',reason:"The one grape you both rate above a 4. Marios gave Produttori's Asili a 4 in July and Nebbiolo sits on Lisa's want-to-try — this bottle settles the table."},
-  {i:0,match:'Crowd pleaser',kind:'crowd',reason:"Argyros Assyrtiko by the glass is the safe opener: Lisa's highest-scoring grape, and Marios rates Santorini whites a 3.9 — no argument, no bottle commitment."},
-  {i:2,match:'New but promising',kind:'new',reason:"Neither of you has had Passopisciaro. Etna reds land between Lisa's Graci 4 and Marios's Xinomavro 5 — same volcanic grip, new to both."}
- ]
-};
-const TASTE={
- Lisa:[{label:'Assyrtiko · Santorini',score:'4.8',pct:'96%'},{label:'Nerello Mascalese · Etna',score:'4.1',pct:'82%'},{label:'Nebbiolo · Piedmont',score:'3.6',pct:'72%'},{label:'Chardonnay · Burgundy',score:'2.0',pct:'40%'}],
- Marios:[{label:'Xinomavro · Naoussa',score:'4.9',pct:'98%'},{label:'Nebbiolo · Piedmont',score:'4.2',pct:'84%'},{label:'Agiorgitiko · Nemea',score:'3.1',pct:'62%'},{label:'Assyrtiko · Santorini',score:'3.9',pct:'78%'}],
- Both:[{label:'Nebbiolo · Piedmont',score:'4.4',pct:'88%'},{label:'Assyrtiko · Santorini',score:'4.3',pct:'86%'},{label:'Xinomavro · Naoussa',score:'4.2',pct:'84%'},{label:'Chardonnay · Burgundy',score:'2.3',pct:'46%'}]
-};
 const GODS=[
  {numeral:'I',name:'Zeus',greek:'ΖΕΥΣ',domain:'Sky, thunder, order',line:'Youngest son of Kronos, and the one who divided the world with his brothers by lot. Presided over Olympus rather than ruled it outright.'},
  {numeral:'II',name:'Hera',greek:'ΗΡΑ',domain:'Marriage, sovereignty',line:'Queen of the gods and the older sibling of Zeus. Her sanctuaries at Argos and Samos were among the oldest in Greece.'},
@@ -645,7 +615,7 @@ const BADGE={loved:GOLD,new:'#F09274',wish:'#C0A6E0',crowd:CREAM};
 class Component extends DCLogic {
   state={
     profile:this.props.startProfile||'Lisa',
-    tab:'scan', scan:'idle', photos:[], wines:MENU.map(w=>({...w})), apiKey:'', scanMsg:'',
+    tab:'scan', scan:'idle', photos:[], wines:[], apiKey:'', scanMsg:'',
     budget:'', occasion:'', rec:'empty', recs:[], recMsg:'', entries:SEED,
     view:this.props.journalView||'timeline', who:'Lisa', kind:'Logged', search:'',
     log:null, rating:4, logPrice:'', logCurrency:'€', logServing:'Bottle', logNotes:'', logPlace:'', toast:'',
@@ -788,8 +758,7 @@ class Component extends DCLogic {
     if(!photos.length){ this.pickFiles(); return; }
     this.setState({scan:'parsing',scanMsg:''});
     if(!apiKey){
-      setTimeout(()=>this.setState({scan:'parsed',wines:MENU.map(w=>({...w})),
-        scanMsg:'Demo list shown — add an Anthropic key under US to read your own photo.'}),1200);
+      this.setState({scan:'error',scanMsg:'No Anthropic key on this phone. Add one under Settings and read the list again.'});
       return;
     }
     try{
@@ -1009,4 +978,3 @@ class Component extends DCLogic {
 </script>
 </body>
 </html>
-
