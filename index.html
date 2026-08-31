@@ -38,7 +38,20 @@ a:hover{color:#E4623F}
 </div>
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:9px">
 <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(242,184,92,0.8)">{{ screenNote }}</div>
-<button onClick="{{ openSettings }}" style="flex:none;background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45);border-bottom:1px solid rgba(251,243,231,0.25)">SETTINGS</button>
+<button onClick="{{ openSettings }}" title="{{ statusTitle }}" style="flex:none;display:flex;align-items:center;gap:11px;background:transparent;border:none;padding:16px 0 16px 14px;margin:-16px 0;cursor:pointer">
+<svg viewBox="0 0 24 24" fill="none" stroke="{{ syncTextColor }}" strokeWidth="1.6" strokeLinecap="round" style="width:15px;height:15px;display:block">
+<ellipse cx="12" cy="6" rx="7" ry="3"></ellipse>
+<path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6"></path>
+<path d="M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6"></path>
+</svg>
+<svg viewBox="0 0 24 24" fill="none" stroke="{{ keyTextColor }}" strokeWidth="1.7" strokeLinecap="round" style="width:16px;height:16px;display:block">
+<circle cx="6.5" cy="12" r="4"></circle>
+<path d="M10.5 12H21"></path>
+<path d="M14.5 12v3.4"></path>
+<path d="M18 12v3.4"></path>
+</svg>
+<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45);border-bottom:1px solid rgba(251,243,231,0.25)">SETTINGS</span>
+</button>
 </div>
 </div>
 
@@ -49,10 +62,6 @@ a:hover{color:#E4623F}
 
 <sc-if value="{{ scanIdle }}" hint-placeholder-val="{{ true }}">
 <div style="display:flex;flex-direction:column;gap:22px;padding-top:22px">
-<button onClick="{{ openSettings }}" style="align-self:flex-start;display:flex;align-items:center;gap:8px;background:transparent;border:none;padding:0;cursor:pointer">
-<div style="width:7px;height:7px;border-radius:50%;background:{{ syncDot }};box-shadow:0 0 8px {{ syncGlow }}"></div>
-<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:{{ syncTextColor }}">{{ syncLabel }}</div>
-</button>
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:25px;line-height:1.3;color:#FBF3E7;letter-spacing:-0.4px;text-wrap:pretty">Point at the wine list.<br><span style="font-style:italic;color:#F2B85C">Eos has your back.</span></div>
 <div style="position:relative;height:320px;border:1px solid rgba(251,243,231,0.14)">
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:11px;padding:38px 30px;opacity:.4">
@@ -110,7 +119,10 @@ a:hover{color:#E4623F}
 <sc-if value="{{ scanError }}" hint-placeholder-val="{{ true }}">
 <div style="margin-top:26px;border-left:2px solid #E4623F;padding:4px 0 4px 16px;display:flex;flex-direction:column;gap:12px">
 <div style="font-size:13.5px;line-height:1.5;color:#FBF3E7">{{ scanMsg }}</div>
+<div style="display:flex;gap:10px">
 <button onClick="{{ parseMenu }}" style="align-self:flex-start;height:36px;padding:0 16px;border:1px solid #E4623F;background:transparent;color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">RETRY</button>
+<button onClick="{{ startOver }}" style="height:36px;padding:0 16px;border:1px solid rgba(251,243,231,0.25);background:transparent;color:rgba(251,243,231,0.6);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">START OVER</button>
+</div>
 </div>
 </sc-if>
 
@@ -145,6 +157,7 @@ a:hover{color:#E4623F}
 <input value="{{ occasion }}" onChange="{{ editOccasion }}" placeholder="Occasion" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;color:#FBF3E7;padding:6px 0">
 </div>
 <button onClick="{{ recommend }}" style="margin-top:22px;height:54px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">FIND OUR PICK</button>
+<button onClick="{{ startOver }}" style="margin-top:10px;height:40px;border:none;background:transparent;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">START OVER</button>
 </div>
 </sc-if>
 
@@ -176,6 +189,9 @@ a:hover{color:#E4623F}
 <div>{{ c.label }} <span style="color:#F2B85C">{{ c.score }}</span></div>
 </sc-for>
 </div>
+<sc-if value="{{ recMsg }}" hint-placeholder-val="{{ true }}">
+<div style="padding:12px 0 0;font-size:12px;line-height:1.5;color:rgba(242,184,92,0.9);text-wrap:pretty">{{ recMsg }}</div>
+</sc-if>
 <sc-for list="{{ recs }}" as="r" hint-placeholder-count="3">
 <div style="padding:22px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:11px">
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
@@ -630,7 +646,7 @@ class Component extends DCLogic {
   state={
     profile:this.props.startProfile||'Lisa',
     tab:'scan', scan:'idle', photos:[], wines:MENU.map(w=>({...w})), apiKey:'', scanMsg:'',
-    budget:'', occasion:'', rec:'empty', entries:SEED,
+    budget:'', occasion:'', rec:'empty', recs:[], recMsg:'', entries:SEED,
     view:this.props.journalView||'timeline', who:'Lisa', kind:'Logged', search:'',
     log:null, rating:4, logPrice:'', logCurrency:'€', logServing:'Bottle', logNotes:'', logPlace:'', toast:'',
     settingsOpen:false, notes:{},
@@ -643,6 +659,50 @@ class Component extends DCLogic {
   async store(){ if(!this._store) this._store=await import('./supabase-store.js'); return this._store; }
   async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js'); return this._vision; }
   async lore(){ if(!this._lore) this._lore=await import('./wine-info.js'); return this._lore; }
+  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js'); return this._taster; }
+  async recer(){ if(!this._recer) this._recer=await import('./recommend.js'); return this._recer; }
+  // Every bottle that gets logged has its taste fingerprint written down, so the
+  // next recommendation has something concrete to compare against.
+  async fingerprintEntry(entry){
+    let key=this.state.apiKey;
+    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(e){} }
+    if(!key) return;
+    try{
+      const T=await this.taster();
+      let shared=null;
+      try{ const S=await this.store();
+        if(S.isConnected()) shared={get:k=>S.fetchInfo(k),put:(k,i)=>S.saveInfo(k,i)};
+      }catch(e){}
+      await T.fingerprint(entry,key,shared);
+      this.forceUpdate();
+    }catch(e){}
+  }
+  async runRec(){
+    const s=this.state, prof=s.profile;
+    const wines=(s.wines||[]).filter(w=>w&&w.name);
+    if(!wines.length){ this.setState({tab:'rec',rec:'empty'}); return; }
+    this.setState({tab:'rec',rec:'thinking',recMsg:''});
+    let key=s.apiKey;
+    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(e){} }
+    const taste=this.buildTaste(prof);
+    let R; try{ R=await this.recer(); }catch(e){ this.setState({rec:'done',recs:[],recMsg:'Could not load the recommender.'}); return; }
+    if(!key){
+      this.setState({rec:'done',recs:R.localPicks(wines,taste),
+        recMsg:'No Anthropic key on this phone, so this is the list alone rather than your record. Add a key under Settings.'});
+      return;
+    }
+    try{
+      const T=await this.taster();
+      const palate=T.brief(s.entries,T.readAll(),prof);
+      const recs=await R.pickWines({wines,palate,note:(s.notes||{})[prof]||'',
+        budget:s.budget,occasion:s.occasion,profile:prof},key);
+      if(!recs.length) throw new Error('Nothing came back from that list.');
+      this.setState({rec:'done',recs,
+        recMsg:palate.empty?'Nothing rated yet — chosen on the list itself. Rate a bottle and the next pick knows your palate.':''});
+    }catch(err){
+      this.setState({rec:'done',recs:R.localPicks(wines,taste),recMsg:(err&&err.message)||'The pick failed.'});
+    }
+  }
   async openEntry(id){
     const cur=this.state.openId;
     if(cur===id){ this.setState({openId:null}); return; }
@@ -760,7 +820,9 @@ class Component extends DCLogic {
       this.setState({sbState:'connected',entries:rows.length?rows:this.state.entries,
         sbMsg:rows.length?'':'Table is empty — use PUSH LOCAL to send this phone\u2019s entries up.'});
       try{ const map=await st.fetchAllInfo(); const L=await this.lore();
-        this.setState({infos:L.mergeCache(map)}); }catch(err){}
+        this.setState({infos:L.mergeCache(map)});
+        try{ const T=await this.taster(); T.mergeCache(map); }catch(e){}
+      }catch(err){}
       if(this._unsub) this._unsub();
       this._unsub=st.subscribe(async()=>{ try{ this.setState({entries:await st.fetchEntries()}); }catch(e){} });
     }catch(err){
@@ -810,9 +872,10 @@ class Component extends DCLogic {
     const taste=this.buildTaste(prof);
     const loved=mine.filter(e=>e.rating>=4).slice(0,3);
     const missed=mine.filter(e=>e.rating<=2).slice(0,2);
-    const recList=(RECS[prof]||[]).map(r=>{
-      const w=s.wines[r.i]||{};
-      return {match:r.match,matchUpper:r.match.toUpperCase(),reason:r.reason,name:w.name,price:w.price,badgeFg:BADGE[r.kind],
+    const recList=(s.recs||[]).map(r=>{
+      const w=r.wine||{};
+      return {match:r.match,matchUpper:(r.match||'').toUpperCase(),reason:r.reason,name:w.name,price:w.price,
+        badgeFg:BADGE[r.kind]||CREAM, wineObj:w,
         sub:[w.producer,w.vintage,w.region,w.serving].filter(Boolean).join(' · ')};
     });
     return {
@@ -838,6 +901,7 @@ class Component extends DCLogic {
       takePhoto:()=>this.pickFiles('camera'), uploadPhoto:()=>this.pickFiles('library'),
       capture:()=>this.pickFiles('camera'), onFiles:e=>this.handleFiles(e),
       reset:()=>this.setState({scan:'idle',photos:[],scanMsg:''}),
+      startOver:()=>this.setState({scan:'idle',photos:[],scanMsg:'',wines:[],rec:'empty',budget:'',occasion:'',tab:'scan'}),
       parseMenu:()=>this.runParse(), scanMsg:s.scanMsg,
       apiKey:s.apiKey, editApiKey:e=>{ const v=e.target.value; this.setState({apiKey:v});
         this.vision().then(m=>m.writeKey(v)).catch(()=>{}); },
@@ -847,7 +911,7 @@ class Component extends DCLogic {
         this.setState(p=>({wines:p.wines.map((w,j)=>j===i?{...w,serving:w.serving==='Bottle'?'Glass':'Bottle'}:w)})); },
       editBudget:e=>this.setState({budget:e.target.value}),
       editOccasion:e=>this.setState({occasion:e.target.value}),
-      recommend:()=>{ this.setState({tab:'rec',rec:'thinking'}); setTimeout(()=>this.setState({rec:'done'}),1600); },
+      recommend:()=>this.runRec(), recMsg:s.recMsg,
       goScan:()=>this.setState({tab:'scan'}),
       recEmpty:s.rec==='empty', recThinking:s.rec==='thinking', recDone:s.rec==='done', recs:recList,
       tasteChips:taste.slice(0,3).map(t=>({label:t.label.split(' · ')[0].toUpperCase(),score:t.score})),
@@ -864,14 +928,16 @@ class Component extends DCLogic {
         try{ const st=await this.store(); const n=await st.pushLocal(s.entries); const rows=await st.fetchEntries();
           this.setState({entries:rows,sbMsg:n?n+' entries pushed to Supabase.':'Nothing local left to push.'}); }
         catch(err){ this.setState({sbMsg:(err&&err.message)||'Push failed.'}); } },
-      openLog:e=>{ const i=+e.currentTarget.dataset.i, r=recList[i];
-        this.setState({log:r.name,rating:4,logUser:prof,logPrice:(r.price||'').replace(/[^0-9]/g,''),logServing:'Bottle',logNotes:'',logPlace:s.occasion||''}); },
+      openLog:e=>{ const i=+e.currentTarget.dataset.i, r=recList[i]; if(!r) return;
+        this.setState({log:r.name,rating:4,logUser:prof,logPrice:String(r.price||'').replace(/[^0-9.]/g,''),
+          logServing:r.wineObj.serving||'Bottle',logNotes:'',logPlace:s.occasion||''}); },
       logUserTabs:['Lisa','Marios','Both'].map(v=>({v,label:v.toUpperCase(),style:this.monoStyle((s.logUser||prof)===v)})),
       setLogUser:e=>this.setState({logUser:e.currentTarget.dataset.v}),
-      saveWish:e=>{ const i=+e.currentTarget.dataset.i, r=recList[i], w=s.wines[(RECS[prof][i]||{}).i]||{};
+      saveWish:e=>{ const i=+e.currentTarget.dataset.i, r=recList[i]; if(!r) return; const w=r.wineObj||{};
         const item={id:'w'+Date.now(),user:prof,date:new Date().toISOString().slice(0,10),wineName:r.name,producer:w.producer,vintage:w.vintage,grape:w.grape,region:w.region,rating:null,notes:'',restaurant:'',notedFrom:s.occasion||'Seen on a list'};
         const next=[item,...s.entries]; this.setState({entries:next}); this.persist(next);
         this.writeEntry(item).then(saved=>{ if(saved&&saved.id!==item.id) this.setState(p=>({entries:p.entries.map(x=>x.id===item.id?saved:x)})); });
+        this.fingerprintEntry(item);
         this.flash('SAVED TO '+(prof==='Both'?'OUR':prof.toUpperCase()+'\u2019S')+' WANT-TO-TRY'); },
       logOpen:!!s.log, logName:s.log, closeLog:()=>this.setState({log:null,logManual:false}),
       logManual:!!s.logManual, logFromMenu:!!s.log&&!s.logManual,
@@ -890,6 +956,11 @@ class Component extends DCLogic {
       syncDot:s.sbState==='connected'?'#63C68A':s.sbState==='connecting'?'#F2B85C':s.sbState==='error'?'#F09274':'rgba(251,243,231,0.3)',
       syncGlow:s.sbState==='connected'?'rgba(99,198,138,0.7)':'transparent',
       syncTextColor:s.sbState==='connected'?'#63C68A':'rgba(251,243,231,0.4)',
+      statusTitle:(s.sbState==='connected'?'Synced':'Not synced')+' \u00b7 '+(s.apiKey?'Key active':'No key'),
+      keyDot:s.apiKey?'#63C68A':'#E4623F',
+      keyGlow:s.apiKey?'rgba(99,198,138,0.7)':'transparent',
+      keyTextColor:s.apiKey?'#63C68A':'#E4623F',
+      keyLabel:s.apiKey?'KEY ACTIVE':'NO KEY \u2014 TAP TO ADD',
       syncLabel:{connected:'LIVE \u00b7 BOTH PHONES IN SYNC',connecting:'CONNECTING\u2026',error:'NOT SYNCED \u2014 TAP TO FIX',local:'THIS PHONE ONLY \u2014 TAP TO SYNC'}[s.sbState]||'THIS PHONE ONLY',
       dialStops:[1,2,3,4,5].map(v=>({v})), sunPct:((s.rating-1)/4*100)+'%', ratingWord:WORDS[s.rating],
       setRating:e=>this.setState({rating:+e.currentTarget.dataset.v}),
@@ -914,6 +985,7 @@ class Component extends DCLogic {
         const next=[item,...s.entries].sort((a,b)=>b.date.localeCompare(a.date));
         this.setState({entries:next,log:null,logManual:false,tab:'journal',kind:'Logged'}); this.persist(next);
         this.writeEntry(item).then(saved=>{ if(saved&&saved.id!==item.id) this.setState(p=>({entries:p.entries.map(x=>x.id===item.id?saved:x)})); });
+        this.fingerprintEntry(item);
         this.flash('LOGGED \u2014 '+WORDS[s.rating].toUpperCase()); },
       entries:ent, journalEmpty:ent.length===0,
       emptyTitle:s.entries.length===0?'Nothing logged yet.':(s.search.trim()?'Nothing matches that.':(s.kind==='Logged'?'Nothing rated yet.':'Nothing on the want-to-try list.')),
@@ -937,3 +1009,4 @@ class Component extends DCLogic {
 </script>
 </body>
 </html>
+
