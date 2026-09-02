@@ -38,6 +38,9 @@ a:hover{color:#E4623F}
 </div>
 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:9px">
 <div style="flex:1;min-width:0;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:rgba(242,184,92,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ screenNote }}</div>
+<sc-if value="{{ isScan }}" hint-placeholder-val="{{ true }}">
+<button onClick="{{ startOver }}" style="flex:none;background:transparent;border:1px solid rgba(228,98,63,0.55);color:#E4623F;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;padding:5px 9px;cursor:pointer">RESTART</button>
+</sc-if>
 <button onClick="{{ openSettings }}" title="{{ statusTitle }}" style="flex:none;display:flex;align-items:center;gap:11px;background:transparent;border:none;padding:16px 0 16px 14px;margin:-16px 0;cursor:pointer">
 <svg viewBox="0 0 24 24" fill="none" stroke="{{ syncTextColor }}" strokeWidth="1.6" strokeLinecap="round" style="width:15px;height:15px;display:block">
 <ellipse cx="12" cy="6" rx="7" ry="3"></ellipse>
@@ -113,6 +116,8 @@ a:hover{color:#E4623F}
 <div style="width:100%;height:1px;background:linear-gradient(90deg,#F2B85C,transparent);animation:eosPulse 1.4s ease-in-out infinite"></div>
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:23px;color:#FBF3E7;letter-spacing:-0.4px">Reading the list</div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">PRODUCERS · VINTAGES · GRAPES · PRICES</div>
+<button onClick="{{ startOver }}" style="margin-top:22px;align-self:flex-start;height:36px;padding:0 16px;border:1px solid rgba(251,243,231,0.25);background:transparent;color:rgba(251,243,231,0.6);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">RESTART</button>
+<div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.4);max-width:280px">Taking too long? Restart clears the photos and the read.</div>
 </div>
 </sc-if>
 
@@ -804,6 +809,7 @@ class Component extends DCLogic {
   async runParse(){
     const {photos,apiKey}=this.state;
     if(!photos.length){ this.pickFiles(); return; }
+    const run=(this._parseRun=(this._parseRun||0)+1);
     this.setState({scan:'parsing',scanMsg:''});
     if(!apiKey){
       this.setState({scan:'error',scanMsg:'No Anthropic key on this phone. Add one under Settings and read the list again.'});
@@ -812,9 +818,10 @@ class Component extends DCLogic {
     try{
       const v=await this.vision();
       const wines=await v.parsePhotos(photos.map(p=>p.src),apiKey);
+      if(run!==this._parseRun) return;
       if(!wines.length) throw new Error('No wines found in those photos.');
       this.setState({scan:'parsed',wines,scanMsg:''});
-    }catch(err){ this.setState({scan:'error',scanMsg:(err&&err.message)||'The read failed.'}); }
+    }catch(err){ if(run!==this._parseRun) return; this.setState({scan:'error',scanMsg:(err&&err.message)||'The read failed.'}); }
   }
   async componentDidMount(){
     try{ const v=await this.vision(); const k=v.readKey(); if(k) this.setState({apiKey:k}); }catch(err){}
@@ -918,7 +925,7 @@ class Component extends DCLogic {
     return {
       profile:prof, profilePoss:prof==='Both'?'our':prof+'\u2019s', profilePossCap:poss,
       screenTitle:{scan:'Scan',rec:'Tonight',journal:'History',profile:'Wine taste',twelve:'The Twelve'}[s.tab],
-      screenNote:{scan:'READ A LIST FROM A PHOTO',rec:poss.toUpperCase()+' PICK FROM THIS LIST',journal:'WHAT WE DRANK',profile:'WHAT EOS KNOWS ABOUT '+(prof==='Both'?'US':prof.toUpperCase()),twelve:'THE OLYMPIAN TWELVE'}[s.tab],
+      screenNote:{scan:'READ A LIST',rec:poss.toUpperCase()+' PICK FROM THIS LIST',journal:'WHAT WE DRANK',profile:'WHAT EOS KNOWS ABOUT '+(prof==='Both'?'US':prof.toUpperCase()),twelve:'THE OLYMPIAN TWELVE'}[s.tab],
       settingsOpen:s.settingsOpen, openSettings:()=>this.setState({settingsOpen:true}), closeSettings:()=>this.setState({settingsOpen:false}),
       lovedList:loved, missedList:missed,
       noteHeading:prof==='Both'?'OUR NOTES FOR EOS':prof.toUpperCase()+'\u2019S NOTES FOR EOS',
@@ -938,7 +945,7 @@ class Component extends DCLogic {
       takePhoto:()=>this.pickFiles('camera'), uploadPhoto:()=>this.pickFiles('library'),
       capture:()=>this.pickFiles('camera'), onFiles:e=>this.handleFiles(e),
       reset:()=>this.setState({scan:'idle',photos:[],scanMsg:''}),
-      startOver:()=>this.setState({scan:'idle',photos:[],scanMsg:'',wines:[],rec:'empty',budget:'',occasion:'',tab:'scan'}),
+      startOver:()=>{ this._parseRun=(this._parseRun||0)+1; this.setState({scan:'idle',photos:[],scanMsg:'',wines:[],rec:'empty',budget:'',occasion:'',tab:'scan'}); },
       parseMenu:()=>this.runParse(), scanMsg:s.scanMsg,
       apiKey:s.apiKey, editApiKey:e=>{ const v=e.target.value; this.setState({apiKey:v});
         this.vision().then(m=>m.writeKey(v)).catch(()=>{}); },
@@ -1059,4 +1066,3 @@ class Component extends DCLogic {
 </script>
 </body>
 </html>
-
