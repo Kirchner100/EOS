@@ -672,11 +672,11 @@ class Component extends DCLogic {
     sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmemduZmRveWVob2hlaXVpbWFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMDI4ODUsImV4cCI6MjEwMzY3ODg4NX0.LqZSkb2NCTTi1wRn2lgN0mx44gG5zM8-yyHULtUa5DE'.trim(), sbMsg:''
   };
   flash(t){ this.setState({toast:t}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2200); }
-  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=3'); return this._store; }
-  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=3'); return this._vision; }
-  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=3'); return this._lore; }
-  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=3'); return this._taster; }
-  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=3'); return this._recer; }
+  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=4'); return this._store; }
+  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=4'); return this._vision; }
+  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=4'); return this._lore; }
+  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=4'); return this._taster; }
+  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=4'); return this._recer; }
   // Every bottle that gets logged has its taste fingerprint written down, so the
   // next recommendation has something concrete to compare against.
   async fingerprintEntry(entry){
