@@ -29,7 +29,7 @@ Return ONLY a JSON array, no prose, no markdown fence. One object per wine:
 {"name":"","producer":"","vintage":"","grape":"","region":"","serving":"Bottle"|"Glass","price":"","currency":""}
 
 FIELDS
-- name — the wine as printed, in the printed language and script. Do not translate. Do not append the producer or the vintage to it.
+- name — the wine as printed, but transliterated into the Latin alphabet if the list is in another script (see LANGUAGE AND SCRIPT). Do not append the producer or the vintage to it.
 - producer — the estate, domaine, winery or grower, when printed separately from the wine name. If the row is just "Ktima Gerovassiliou Malagousia", producer is "Ktima Gerovassiliou" and name is "Malagousia". If you cannot tell which part is the producer, put the whole row in name and leave producer "".
 - vintage — a 4-digit year, or "NV" for non-vintage (common on sparkling), else "".
 - grape — only if printed or inheritable from a heading. Do not deduce it from your own knowledge of the wine: a Chablis under a "Burgundy" heading has grape "" unless "Chardonnay" appears on the page.
@@ -37,6 +37,13 @@ FIELDS
 - serving — "Glass" if the wine sits in a by-the-glass section, or has a price in a glass column, else "Bottle".
 - price — printed digits only, no symbol, no thousands separator ("58", "120", "9.5").
 - currency — the symbol or code as printed ("€", "$", "£", "CHF"). If prices are bare numbers with no symbol anywhere on the page, use "".
+
+LANGUAGE AND SCRIPT
+- The finished JSON must be readable by an English speaker. Every value goes out in the Latin alphabet — never Greek, Cyrillic, Japanese, Chinese, Korean, Hebrew or Arabic script.
+- name and producer are TRANSLITERATED, not translated: write the sound of the printed name in Latin letters, using the estate's own established romanisation where you know it. "Κτῆμα Γεροβασίλειου" becomes "Ktima Gerovassiliou", not "Gerovassiliou Estate". Keep a descriptive word that is part of the name in transliteration too.
+- grape and region are TRANSLATED to their standard English names: "Ασύρτικο" becomes "Assyrtiko", "Νεμέα" becomes "Nemea", "Αγιωργίτικο" becomes "Agiorgitiko". Use the name the wine is known by in English where one exists.
+- Headings you read for inheritance are translated the same way before you use them.
+- Digits printed in another numeral system are converted to Arabic numerals.
 
 INHERITANCE
 - A wine inherits grape and region from the nearest heading above it, and from any heading above that one. Under "GREECE" → "Santorini" → "Assyrtiko", a wine gets region "Santorini" and grape "Assyrtiko".
