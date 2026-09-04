@@ -736,7 +736,7 @@ class Component extends DCLogic {
     try{ L=await this.lore(); }
     catch(err){
       this.setState(p=>({infoState:{...p.infoState,[k]:'error'},
-        infoMsg:{...p.infoMsg,[k]:'wine-info.js could not be loaded from the server \u2014 check the file is at the site root.'}}));
+        infoMsg:{...p.infoMsg,[k]:'wine-info.js did not load \u2014 '+((err&&err.message)||'unknown error')+'. Open /wine-info.js in the browser to check it is there.'}}));
       return;
     }
     let key=this.state.apiKey;
