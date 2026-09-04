@@ -4,6 +4,10 @@
 const LS_ENTRIES = 'eos.entries.v1';
 const LS_CONFIG = 'eos.supabase.v1';
 const CDN = 'https://esm.sh/@supabase/supabase-js@2';
+// Table name — change here if you rename the table in Supabase.
+export const TABLE = 'wine_entries_v2';
+// Shared cache of Claude-written wine primers, so a lookup is paid for once.
+export const INFO_TABLE = 'wine_info_v1';
 
 let client = null;
 
@@ -44,7 +48,7 @@ const fromRow = r => ({
 export async function connect(url, key) {
   const { createClient } = await import(CDN);
   client = createClient(url, key);
-  const { error } = await client.from('wine_entries').select('id').limit(1);
+  const { error } = await client.from(TABLE).select('id').limit(1);
   if (error) { client = null; throw error; }
   return true;
 }
@@ -53,7 +57,7 @@ export function isConnected() { return !!client; }
 
 export async function fetchEntries() {
   if (!client) throw new Error('not connected');
-  const { data, error } = await client.from('wine_entries')
+  const { data, error } = await client.from(TABLE)
     .select('*').order('date', { ascending: false });
   if (error) throw error;
   return data.map(fromRow);
@@ -61,7 +65,7 @@ export async function fetchEntries() {
 
 export async function saveEntry(entry) {
   if (!client) throw new Error('not connected');
-  const { data, error } = await client.from('wine_entries')
+  const { data, error } = await client.from(TABLE)
     .insert(toRow(entry)).select().single();
   if (error) throw error;
   return fromRow(data);
@@ -69,7 +73,7 @@ export async function saveEntry(entry) {
 
 export async function deleteEntry(id) {
   if (!client) throw new Error('not connected');
-  const { error } = await client.from('wine_entries').delete().eq('id', id);
+  const { error } = await client.from(TABLE).delete().eq('id', id);
   if (error) throw error;
 }
 
@@ -78,16 +82,42 @@ export async function pushLocal(entries) {
   if (!client) throw new Error('not connected');
   const rows = entries.filter(e => !/^[0-9a-f-]{36}$/i.test(e.id)).map(toRow);
   if (!rows.length) return 0;
-  const { error } = await client.from('wine_entries').insert(rows);
+  const { error } = await client.from(TABLE).insert(rows);
   if (error) throw error;
   return rows.length;
+}
+
+// --- Shared wine primers ---------------------------------------------------
+
+export async function fetchInfo(key) {
+  if (!client) return null;
+  const { data, error } = await client.from(INFO_TABLE)
+    .select('info').eq('wine_key', key).maybeSingle();
+  if (error || !data) return null;
+  return data.info || null;
+}
+
+export async function fetchAllInfo() {
+  if (!client) return {};
+  const { data, error } = await client.from(INFO_TABLE).select('wine_key,info');
+  if (error || !data) return {};
+  const out = {};
+  data.forEach(r => { if (r.info) out[r.wine_key] = r.info; });
+  return out;
+}
+
+export async function saveInfo(key, info) {
+  if (!client) return false;
+  const { error } = await client.from(INFO_TABLE)
+    .upsert({ wine_key: key, info }, { onConflict: 'wine_key' });
+  return !error;
 }
 
 // Live updates from the other person's phone.
 export function subscribe(onChange) {
   if (!client) return () => {};
-  const ch = client.channel('wine_entries')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'wine_entries' }, onChange)
+  const ch = client.channel(TABLE)
+    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, onChange)
     .subscribe();
   return () => client.removeChannel(ch);
 }
