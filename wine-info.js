@@ -1,3 +1,6 @@
+// Plain-language primer for a single wine, written by Claude and cached locally
+// so a wine you looked up a year ago costs nothing to look up again.
+
 const LS_KEY = 'eos.wineinfo.v2';
 const MODEL = 'claude-sonnet-4-6';
 
@@ -117,6 +120,68 @@ Be specific and factual about the producer and region where you are confident. W
   put(k, info);
   if (shared && shared.put) { try { await shared.put(k, info); } catch {} }
   return info;
+}
+
+// What the internet says: a Vivino/critic score where one can be found and a
+// two-sentence digest of reviews. Uses Claude's web search; cached like primers.
+export function reviewKey(e) { return 'rev:' + wineKey(e); }
+export function readCachedReview(e) { return cache()[reviewKey(e)] || null; }
+
+export async function fetchReviews(entry, key, shared) {
+  const k = reviewKey(entry);
+  const cached = readCachedReview(entry);
+  if (cached) return cached;
+  if (shared && shared.get) {
+    try { const hit = await shared.get(k); if (hit && hit.digest) { put(k, hit); return hit; } } catch {}
+  }
+  const desc = [entry.wineName, entry.producer, entry.vintage, entry.grape, entry.region].filter(Boolean).join(' ');
+  const prompt = `Search the web for reviews and ratings of this wine: ${desc}
+
+Look for its Vivino rating (out of 5, with the number of ratings), any critic scores (Wine Spectator, Decanter, Wine Advocate, Jancis Robinson), and what ordinary drinkers say about it.
+
+Return ONLY this JSON object, no prose, no markdown fence:
+{"score":"","scoreSource":"","critic":"","digest":"","found":true}
+
+- score: the Vivino rating as printed, e.g. "4.1 / 5 (2,300 ratings)". "" if you could not find one for this bottle or a very close vintage.
+- scoreSource: "Vivino" or whichever site the score came from. "" if none.
+- critic: one short line with any critic scores found, e.g. "Decanter 92 · Wine Spectator 90". "" if none.
+- digest: 2 sentences in plain English summarising what reviewers agree on — flavour, quality for the price, any common complaint. Specific words that reviewers actually use.
+- found: false if you found nothing about this specific wine or producer; then write digest about the producer or appellation in general and say that is what you did.`;
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 1200,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 4 }],
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!res.ok) {
+    let detail = '';
+    try { detail = (await res.json()).error?.message || ''; } catch {}
+    throw new Error(detail || `Anthropic returned ${res.status}`);
+  }
+  const body = await res.json();
+  const text = (body.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+  const start = text.indexOf('{'), end = text.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('No reviews came back');
+  let o;
+  try { o = JSON.parse(text.slice(start, end + 1)); } catch { throw new Error('Could not read the reviews'); }
+  const rev = {
+    score: (o.score || '').trim(), scoreSource: (o.scoreSource || '').trim(),
+    critic: (o.critic || '').trim(), digest: (o.digest || '').trim(), found: o.found !== false,
+  };
+  if (!rev.digest) throw new Error('No reviews came back');
+  put(k, rev);
+  if (shared && shared.put) { try { await shared.put(k, rev); } catch {} }
+  return rev;
 }
 
 // Merge primers written on the other phone into this device's cache.
