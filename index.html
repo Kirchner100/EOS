@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -56,6 +57,24 @@ a:hover{color:#E4623F}
 </div>
 
 <div style="flex:1;overflow-y:auto;overflow-x:hidden;padding:0 26px 120px">
+
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;animation:eosRise .35s cubic-bezier(0.22,1,0.36,1)">
+<div style="padding:22px 0 18px;border-bottom:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column;gap:8px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:26px;line-height:1.15;color:#FBF3E7;letter-spacing:-0.5px;text-wrap:pretty">{{ homeGreeting }}</div>
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:18px;line-height:1.3;color:rgba(251,243,231,0.75);letter-spacing:-0.2px;text-wrap:pretty">{{ homeLine }} <span style="font-style:italic;color:#F2B85C">{{ homePunch }}</span></div>
+</div>
+<sc-for list="{{ homeLinks }}" as="h" hint-placeholder-count="4">
+<button data-v="{{ h.v }}" onClick="{{ setTab }}" style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;width:100%;text-align:left;padding:14px 0;border:none;border-bottom:1px solid rgba(251,243,231,0.1);background:transparent;cursor:pointer">
+<div style="min-width:0">
+<div style="font-family:'Fraunces',serif;font-weight:400;font-size:21px;line-height:1.1;color:#FBF3E7;letter-spacing:-0.4px">{{ h.title }}</div>
+<div style="margin-top:4px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:rgba(251,243,231,0.45)">{{ h.note }}</div>
+</div>
+<div style="flex:none;font-family:'IBM Plex Mono',monospace;font-size:14px;color:#F2B85C">→</div>
+</button>
+</sc-for>
+</div>
+</sc-if>
 
 <sc-if value="{{ isScan }}" hint-placeholder-val="{{ true }}">
 <div style="display:flex;flex-direction:column">
@@ -159,9 +178,21 @@ a:hover{color:#E4623F}
 </div>
 </div>
 </sc-for>
-<div style="display:flex;flex-direction:column;gap:12px;padding:22px 0 18px">
+<button onClick="{{ openBrief }}" style="margin-top:26px;height:54px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">NEXT · WHAT ARE WE AFTER</button>
+<button onClick="{{ startOver }}" style="margin-top:10px;height:40px;border:none;background:transparent;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">START OVER</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ scanBrief }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;animation:eosRise .35s cubic-bezier(0.22,1,0.36,1)">
+<div style="display:flex;align-items:baseline;justify-content:space-between;padding:20px 0 12px;border-bottom:1px solid rgba(251,243,231,0.14)">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:24px;color:#FBF3E7;letter-spacing:-0.4px">Tonight</div>
+<button onClick="{{ backToList }}" style="background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:rgba(251,243,231,0.45);border-bottom:1px solid rgba(251,243,231,0.25)">BACK TO THE LIST</button>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;padding:24px 0 0">
 <div style="display:flex;align-items:baseline;justify-content:space-between">
-<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">WHAT ARE WE IN THE MOOD FOR</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">COLOUR</div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.2px;color:#F2B85C">{{ pickCount }} IN PLAY</div>
 </div>
 <div style="display:flex;flex-wrap:wrap;gap:8px">
@@ -170,12 +201,25 @@ a:hover{color:#E4623F}
 </sc-for>
 </div>
 </div>
-<div style="display:flex;gap:18px;padding:6px 0 22px;border-bottom:1px solid rgba(251,243,231,0.14)">
-<input value="{{ budget }}" onChange="{{ editBudget }}" placeholder="Budget" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;color:#FBF3E7;padding:6px 0">
-<input value="{{ occasion }}" onChange="{{ editOccasion }}" placeholder="Occasion" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;color:#FBF3E7;padding:6px 0">
+
+<div style="display:flex;flex-direction:column;gap:12px;padding:26px 0 0">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">BY THE GLASS OR A BOTTLE</div>
+<div style="display:flex;gap:8px">
+<sc-for list="{{ servingChips }}" as="c" hint-placeholder-count="3">
+<button data-v="{{ c.v }}" onClick="{{ setServingPref }}" style="{{ c.style }}">{{ c.label }}</button>
+</sc-for>
 </div>
-<button onClick="{{ recommend }}" style="margin-top:22px;height:54px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">FIND OUR PICK</button>
-<button onClick="{{ startOver }}" style="margin-top:10px;height:40px;border:none;background:transparent;color:rgba(251,243,231,0.45);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">START OVER</button>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;padding:26px 0 0">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45)">ANYTHING ELSE</div>
+<div style="display:flex;gap:18px">
+<input value="{{ budget }}" onChange="{{ editBudget }}" placeholder="Budget" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:14px;color:#FBF3E7;padding:8px 0">
+<input value="{{ occasion }}" onChange="{{ editOccasion }}" placeholder="Occasion or food" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:14px;color:#FBF3E7;padding:8px 0">
+</div>
+</div>
+
+<button onClick="{{ recommend }}" style="margin-top:34px;height:54px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">FIND OUR PICK</button>
 </div>
 </sc-if>
 
@@ -692,7 +736,7 @@ const BADGE={loved:GOLD,new:'#F09274',wish:'#C0A6E0',crowd:CREAM};
 class Component extends DCLogic {
   state={
     profile:this.props.startProfile||'Lisa',
-    tab:'scan', scan:'idle', photos:[], wines:[], apiKey:'', scanMsg:'',
+    tab:'home', scan:'idle', photos:[], wines:[], apiKey:'', scanMsg:'',
     budget:'', occasion:'', rec:'empty', recs:[], recMsg:'', entries:SEED,
     view:this.props.journalView||'timeline', who:'Lisa', kind:'Logged', search:'',
     log:null, rating:4, logPrice:'', logCurrency:'€', logServing:'Bottle', logNotes:'', logPlace:'', toast:'',
@@ -703,11 +747,11 @@ class Component extends DCLogic {
     sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmemduZmRveWVob2hlaXVpbWFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMDI4ODUsImV4cCI6MjEwMzY3ODg4NX0.LqZSkb2NCTTi1wRn2lgN0mx44gG5zM8-yyHULtUa5DE'.trim(), sbMsg:''
   };
   flash(t){ this.setState({toast:t}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2200); }
-  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=8'); return this._store; }
-  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=8'); return this._vision; }
-  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=8'); return this._lore; }
-  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=8'); return this._taster; }
-  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=8'); return this._recer; }
+  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=9'); return this._store; }
+  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=9'); return this._vision; }
+  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=9'); return this._lore; }
+  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=9'); return this._taster; }
+  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=9'); return this._recer; }
   // Every bottle that gets logged has its taste fingerprint written down, so the
   // next recommendation has something concrete to compare against.
   async fingerprintEntry(entry){
@@ -729,7 +773,7 @@ class Component extends DCLogic {
     const s=this.state, prof=s.profile;
     const wines=this.pickable(s).filter(w=>w&&w.name);
     if(!wines.length){ this.setState({tab:'rec',rec:'empty'}); return; }
-    const styles=(s.styles||[]).length?s.styles.join(', '):'';
+    const styles=[(s.styles||[]).length?s.styles.join(', '):'',(s.servingPref||'Either')==='Glass'?'by the glass':(s.servingPref==='Bottle'?'a bottle':'')].filter(Boolean).join('; ');
     const focus=opts.focus==null?null:opts.focus;
     const shown=opts.more?[...(s.shownIdx||[]),...(s.recs||[]).map(r=>r.index)]:[];
     const exclude=focus===null?shown.filter(i=>i<wines.length):[];
@@ -858,7 +902,7 @@ class Component extends DCLogic {
       const wines=await v.parsePhotos(photos.map(p=>p.src),apiKey);
       if(run!==this._parseRun) return;
       if(!wines.length) throw new Error('No wines found in those photos.');
-      this.setState({scan:'parsed',wines,styles:[],scanMsg:'',recs:[],shownIdx:[],askIdx:null});
+      this.setState({scan:'parsed',wines,styles:[],servingPref:'Either',scanMsg:'',recs:[],shownIdx:[],askIdx:null});
     }catch(err){ if(run!==this._parseRun) return; this.setState({scan:'error',scanMsg:(err&&err.message)||'The read failed.'}); }
   }
   async componentDidMount(){
@@ -913,7 +957,8 @@ class Component extends DCLogic {
   }
   tabStyle(active){ return `background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.5px;color:${active?GOLD:'rgba(251,243,231,0.4)'};border-bottom:1px solid ${active?GOLD:'transparent'};padding-bottom:3px`; }
   viewStyle(active){ return `background:transparent;border:none;padding:0 0 5px;cursor:pointer;font-family:'Public Sans',sans-serif;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:${active?GOLD:'rgba(251,243,231,0.35)'};border-bottom:2px solid ${active?GOLD:'transparent'}`; }
-  pickable(s){ const sel=s.styles||[]; return sel.length?s.wines.filter(w=>sel.includes(w.style)):s.wines; }
+  pickable(s){ const sel=s.styles||[], sv=s.servingPref||'Either';
+    return s.wines.filter(w=>(!sel.length||!w.style||sel.includes(w.style))&&(sv==='Either'||!w.serving||w.serving===sv)); }
   chipStyle(active){ return `flex:1;height:44px;background:${active?GOLD:'transparent'};border:1px solid ${active?GOLD:'rgba(251,243,231,0.22)'};color:${active?'#14132B':'rgba(251,243,231,0.6)'};font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.2px;cursor:pointer`; }
   async removeEntry(id){
     const next=this.state.entries.filter(e=>e.id!==id);
@@ -972,10 +1017,12 @@ class Component extends DCLogic {
     const missed=mine.filter(e=>e.rating<=2).slice(0,2);
     const present=[...new Set(s.wines.map(w=>w.style).filter(Boolean))];
     const styleOrder=['Red','White','Rosé','Sparkling','Sweet','Fortified'];
-    const styleChips=styleOrder.filter(v=>present.includes(v)).map(v=>{
+    const chipCss=on=>`height:40px;padding:0 14px;background:${on?GOLD:'transparent'};border:1px solid ${on?GOLD:'rgba(251,243,231,0.22)'};color:${on?'#14132B':'rgba(251,243,231,0.5)'};font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;cursor:pointer`;
+    const servingChips=['Either','Glass','Bottle'].map(v=>({v,label:v==='Either'?'EITHER':v==='Glass'?'BY THE GLASS':'A BOTTLE',style:'flex:1;'+chipCss((s.servingPref||'Either')===v)}));
+    const styleChips=(present.length?styleOrder.filter(v=>present.includes(v)):styleOrder).map(v=>{
       const on=!(s.styles||[]).length||(s.styles||[]).includes(v);
       const n=s.wines.filter(w=>w.style===v).length;
-      return {v,label:v.toUpperCase()+' · '+n,style:`height:36px;padding:0 12px;background:${on?GOLD:'transparent'};border:1px solid ${on?GOLD:'rgba(251,243,231,0.22)'};color:${on?'#14132B':'rgba(251,243,231,0.5)'};font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;cursor:pointer`};
+      return {v,label:n?v.toUpperCase()+' · '+n:v.toUpperCase(),style:`height:36px;padding:0 12px;background:${on?GOLD:'transparent'};border:1px solid ${on?GOLD:'rgba(251,243,231,0.22)'};color:${on?'#14132B':'rgba(251,243,231,0.5)'};font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;cursor:pointer`};
     });
     const recList=(s.recs||[]).map(r=>{
       const w=r.wine||{};
@@ -987,8 +1034,31 @@ class Component extends DCLogic {
       profile:prof, profilePoss:prof==='Both'?'our':prof+'\u2019s', profilePossCap:poss,
       titleSize:s.tab==='rec'?'28px':'33px',
       scanHasWork:s.scan!=='idle'||s.photos.length>0,
-      screenTitle:{scan:'Scan',rec:'Recommendation',journal:'History',profile:'Wine taste',twelve:'The Twelve'}[s.tab],
-      screenNote:{scan:'READ A LIST',rec:poss.toUpperCase()+' PICK FROM THIS LIST',journal:'WHAT WE DRANK',profile:'WHAT EOS KNOWS ABOUT '+(prof==='Both'?'US':prof.toUpperCase()),twelve:'THE OLYMPIAN TWELVE'}[s.tab],
+      isHome:s.tab==='home',
+      ...(()=>{
+        const name=prof==='Both'?'Lisa & Marios':prof;
+        const last=mine[0];
+        const days=last?Math.max(0,Math.round((Date.now()-new Date(last.date+'T12:00:00').getTime())/86400000)):null;
+        const you=prof==='Both'?'you two':'you';
+        const dayWord=days===1?'day':'days';
+        let line, punch;
+        if(days===null){ line='Eos has no record of '+you+' ever drinking wine.'; punch='We both know that isn\u2019t true. Let\u2019s fix the record.'; }
+        else if(days===0){ line='It\u2019s been 0 days since '+you+' had wine.'; punch='Consistency is a virtue. Keep it at 0.'; }
+        else if(days===1){ line='It\u2019s been 1 day since '+you+' had wine.'; punch='Practically a dry spell. Let\u2019s make that 0.'; }
+        else if(days<7){ line='It\u2019s been '+days+' '+dayWord+' since '+you+' had wine.'; punch='Let\u2019s make that 0.'; }
+        else if(days<30){ line='It\u2019s been '+days+' days since '+you+' had wine.'; punch='The cellar is starting to worry. Let\u2019s make that 0.'; }
+        else { line='It\u2019s been '+days+' days since '+you+' had wine.'; punch='Did '+you+' move somewhere without vines? Let\u2019s make that 0.'; }
+        const h=new Date().getHours(), greet=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+        const logged=mine.length, wishes=s.entries.filter(e=>e.rating==null&&(prof==='Both'||e.user===prof||e.user==='Both')).length;
+        return {homeGreeting:greet+', '+name+'.', homeLine:line, homePunch:punch,
+          homeLinks:[
+            {v:'scan',title:'Scan',note:s.wines.length?s.wines.length+' WINES READ \u2014 PICK UP WHERE YOU LEFT OFF':'READ TONIGHT\u2019S LIST'},
+            {v:'rec',title:'Recommendation',note:(s.recs||[]).length?(s.recs.length)+' PICKS WAITING':'OUR PICK FROM THE LIST'},
+            {v:'journal',title:'History',note:logged+' BOTTLES LOGGED'+(wishes?' \u00b7 '+wishes+' TO TRY':'')},
+            {v:'profile',title:'Wine taste',note:'WHAT EOS KNOWS ABOUT '+(prof==='Both'?'US':prof.toUpperCase())}]};
+      })(),
+      screenTitle:{home:'Eos',scan:'Scan',rec:'Recommendation',journal:'History',profile:'Wine taste',twelve:'The Twelve'}[s.tab],
+      screenNote:{home:'WINE COMPANION',scan:'READ A LIST',rec:poss.toUpperCase()+' PICK FROM THIS LIST',journal:'WHAT WE DRANK',profile:'WHAT EOS KNOWS ABOUT '+(prof==='Both'?'US':prof.toUpperCase()),twelve:'THE OLYMPIAN TWELVE'}[s.tab],
       settingsOpen:s.settingsOpen, openSettings:()=>this.setState({settingsOpen:true}), closeSettings:()=>this.setState({settingsOpen:false}),
       lovedList:loved, missedList:missed,
       noteHeading:prof==='Both'?'OUR NOTES FOR EOS':prof.toUpperCase()+'\u2019S NOTES FOR EOS',
@@ -1009,7 +1079,7 @@ class Component extends DCLogic {
       takePhoto:()=>this.pickFiles('camera'), uploadPhoto:()=>this.pickFiles('library'),
       capture:()=>this.pickFiles('camera'), onFiles:e=>this.handleFiles(e),
       reset:()=>this.setState({scan:'idle',photos:[],scanMsg:''}),
-      startOver:()=>{ this._parseRun=(this._parseRun||0)+1; this.setState({scan:'idle',photos:[],scanMsg:'',wines:[],styles:[],rec:'empty',budget:'',occasion:'',tab:'scan'}); },
+      startOver:()=>{ this._parseRun=(this._parseRun||0)+1; this.setState({scan:'idle',photos:[],scanMsg:'',wines:[],styles:[],servingPref:'Either',rec:'empty',budget:'',occasion:'',tab:'scan'}); },
       parseMenu:()=>this.runParse(), scanMsg:s.scanMsg,
       apiKey:s.apiKey, editApiKey:e=>{ const v=e.target.value; this.setState({apiKey:v});
         this.vision().then(m=>m.writeKey(v)).catch(()=>{}); },
@@ -1017,7 +1087,11 @@ class Component extends DCLogic {
         this.setState(p=>({wines:p.wines.map((w,j)=>j===i?{...w,[f]:v}:w)})); },
       toggleServing:e=>{ const i=+e.currentTarget.dataset.i;
         this.setState(p=>({wines:p.wines.map((w,j)=>j===i?{...w,serving:w.serving==='Bottle'?'Glass':'Bottle'}:w)})); },
-      styleChips:styleChips, pickCount:this.pickable(s).length,
+      styleChips:styleChips, servingChips, pickCount:this.pickable(s).length,
+      scanBrief:s.scan==='brief',
+      openBrief:()=>this.setState({scan:'brief'}),
+      backToList:()=>this.setState({scan:'parsed'}),
+      setServingPref:e=>this.setState({servingPref:e.currentTarget.dataset.v}),
       toggleStyle:e=>{ const v=e.currentTarget.dataset.v; this.setState(p=>{
         const cur=p.styles||[]; const next=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v];
         return {styles:next}; }); },
@@ -1145,7 +1219,7 @@ class Component extends DCLogic {
       setFRegion:e=>this.setState({fRegion:e.target.value}),
       filtersOn:!!(s.fGrape||s.fProducer||s.fRegion),
       clearFilters:()=>this.setState({fGrape:'',fProducer:'',fRegion:''}),
-      tabs:[['scan','SCAN'],['rec','PICK'],['journal','HISTORY'],['profile','TASTE'],['twelve','XII']].map(([v,label])=>({v,label,style:this.tabStyle(s.tab===v)})),
+      tabs:[['home','HOME'],['scan','SCAN'],['rec','PICK'],['journal','HISTORY'],['profile','TASTE'],['twelve','XII']].map(([v,label])=>({v,label,style:this.tabStyle(s.tab===v)})),
       setTab:e=>this.setState({tab:e.currentTarget.dataset.v}),
       toast:s.toast
     };
