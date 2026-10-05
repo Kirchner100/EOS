@@ -5,12 +5,13 @@ const MODEL = 'claude-sonnet-4-6';
 
 const SYSTEM = `You are a sommelier who knows two regular guests well and has their full drinking record in front of you. You recommend from the list actually in front of them, never from wines that are not on it. You are candid: if the list is weak, or nothing on it matches what they like, you say so.`;
 
-export async function pickWines({ wines, palate, note, budget, occasion, profile, count = 3 }, key) {
+export async function pickWines({ wines, palate, note, budget, occasion, styles, profile, count = 3, exclude = [], focus = null }, key) {
   const list = wines.map((w, i) => {
-    const bits = [w.name, w.producer, w.vintage, w.grape, w.region, w.serving, w.price]
+    if (exclude.includes(i) && focus === null) return null;
+    const bits = [w.name, w.producer, w.vintage, w.style, w.grape, w.region, w.serving, w.price]
       .filter(Boolean).join(' | ');
     return `${i}. ${bits}`;
-  }).join('\n');
+  }).filter(Boolean).join('\n');
 
   const who = profile === 'Both' ? 'the two of them together' : profile;
 
@@ -22,21 +23,21 @@ WHO IS DRINKING: ${who}
 WHAT THEY HAVE DRUNK AND HOW THEY RATED IT
 ${palate.text}
 ${note ? `\nTHEIR OWN STANDING INSTRUCTIONS (these override your judgement)\n${note}` : ''}
-${budget ? `\nBUDGET: ${budget}` : ''}${occasion ? `\nOCCASION: ${occasion}` : ''}
+${styles ? `\nTHEY WANT: ${styles} only. Do not recommend anything else from the list.` : ''}${focus !== null ? `\nTHEY ARE ASKING ABOUT ONE WINE: #${focus}. Return exactly one object for index ${focus}. Give your honest verdict on it against their record — whether to order it, and why.` : exclude.length ? `\nALREADY SHOWN (do not repeat): ${exclude.map(i => '#' + i).join(', ')}. These rows are omitted from the list above.` : ''}${budget ? `\nBUDGET: ${budget}` : ''}${occasion ? `\nOCCASION: ${occasion}` : ''}
 
 Task, in this order:
 1. Read the list and work out which bottles are genuinely good — quality, typicity, and value for the price asked.
 2. Compare those against the drinking record above: which grapes, regions and styles have scored well, which have scored badly.
-3. Choose ${count} bottles. Rank them best first. Vary them: do not pick three near-identical wines.
+3. Choose ${focus !== null ? 1 : count} bottle${focus !== null ? '' : 's'}. Rank them best first. Vary them: do not pick three near-identical wines.
 
-Return ONLY a JSON array of ${count} objects, no prose, no markdown fence:
+Return ONLY a JSON array of ${focus !== null ? 1 : count} objects, no prose, no markdown fence:
 [{"index":0,"match":"","kind":"loved"|"new"|"crowd"|"wish","reason":""}]
 
 - index: the number of the wine from the list above. Never invent an index.
 - match: a 2-4 word label for why it is here, e.g. "Straight down the line", "One step sideways", "Best value here".
 - kind: "loved" if it closely matches a style they have rated 4+; "new" if it is a deliberate stretch into something unrated; "crowd" if it is the safe choice for mixed company; "wish" if it is the most interesting bottle on the list regardless of their record.
 - reason: 1-2 sentences. Name the specific past bottle or grape × region and its score when you are leaning on their record — "you gave Assyrtiko from Santorini a 4.8 last March, and this is the same grape from the same island". ${palate.empty ? 'THERE IS NO RECORD YET: say plainly that this is a first pick with nothing to go on, and justify it on the wine itself. Never imply you know their preferences.' : 'Do not invent a rating or a bottle that is not in the record above.'}
-- If the whole list is poor for them, still return ${count} bottles but say so honestly in the reasons.`;
+- If the whole list is poor for them, still return the bottles asked for but say so honestly in the reasons.`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
