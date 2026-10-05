@@ -1,82 +1,44 @@
-// Menu photo → structured wine list, via the Anthropic Messages API called
-// directly from the browser with a user-supplied key.
 
-const LS_KEY = 'eos.anthropic.v1';
+// Picks tonight's bottles from a parsed list, judged against the taste history
+// Eos has accumulated. With no history yet it says so and picks on merit.
+
 const MODEL = 'claude-sonnet-4-6';
 
-export function readKey() { return localStorage.getItem(LS_KEY) || ''; }
-export function writeKey(k) { localStorage.setItem(LS_KEY, (k || '').trim()); }
+const SYSTEM = `You are a sommelier who knows two regular guests well and has their full drinking record in front of you. You recommend from the list actually in front of them, never from wines that are not on it. You are candid: if the list is weak, or nothing on it matches what they like, you say so.`;
 
-export function fileToDataUrl(file) {
-  return new Promise((res, rej) => {
-    const fr = new FileReader();
-    fr.onload = () => res(fr.result);
-    fr.onerror = () => rej(new Error('Could not read that photo'));
-    fr.readAsDataURL(file);
-  });
-}
+export async function pickWines({ wines, palate, note, budget, occasion, styles, profile, count = 3, exclude = [], focus = null }, key) {
+  const list = wines.map((w, i) => {
+    if (exclude.includes(i) && focus === null) return null;
+    const bits = [w.name, w.producer, w.vintage, w.style, w.grape, w.region, w.serving, w.price]
+      .filter(Boolean).join(' | ');
+    return `${i}. ${bits}`;
+  }).filter(Boolean).join('\n');
 
-const SYSTEM = `You are a sommelier's assistant reading a restaurant drinks list from photographs taken at the table. The photos are often poorly lit, shot at an angle, partly in shadow, and the list may be in Greek, Italian, French, Spanish, German or Japanese. Your only job is to transcribe what is printed into structured data. You transcribe; you do not embellish, translate, correct or invent.`;
+  const who = profile === 'Both' ? 'the two of them together' : profile;
 
-const PROMPT = `These photos are consecutive pages of ONE restaurant wine or sake list. Read every wine and every sake on every page.
+  const prompt = `THE LIST IN FRONT OF THEM (index. name | producer | vintage | grape | region | serving | price)
+${list}
 
-Work in this order before you answer:
-1. Identify the page structure — section headings, sub-headings, and which column holds prices. Lists are usually grouped by colour (white/red/rosé/sparkling/dessert), then by country, region or grape. Sake lists group by classification or prefecture.
-2. Note any by-the-glass section or glass-price column.
-3. Then transcribe each wine row.
+WHO IS DRINKING: ${who}
 
-Return ONLY a JSON array, no prose, no markdown fence. One object per wine:
-{"name":"","producer":"","vintage":"","grape":"","region":"","serving":"Bottle"|"Glass","price":"","currency":""}
+WHAT THEY HAVE DRUNK AND HOW THEY RATED IT
+${palate.text}
+${note ? `\nTHEIR OWN STANDING INSTRUCTIONS (these override your judgement)\n${note}` : ''}
+${styles ? `\nTHEY WANT: ${styles} only. Do not recommend anything else from the list.` : ''}${focus !== null ? `\nTHEY ARE ASKING ABOUT ONE WINE: #${focus}. Return exactly one object for index ${focus}. Give your honest verdict on it against their record — whether to order it, and why.` : exclude.length ? `\nALREADY SHOWN (do not repeat): ${exclude.map(i => '#' + i).join(', ')}. These rows are omitted from the list above.` : ''}${budget ? `\nBUDGET: ${budget}` : ''}${occasion ? `\nOCCASION: ${occasion}` : ''}
 
-FIELDS
-- name — the wine as printed, but transliterated into the Latin alphabet if the list is in another script (see LANGUAGE AND SCRIPT). Do not append the producer or the vintage to it.
-- producer — the estate, domaine, winery or grower, when printed separately from the wine name. If the row is just "Ktima Gerovassiliou Malagousia", producer is "Ktima Gerovassiliou" and name is "Malagousia". If you cannot tell which part is the producer, put the whole row in name and leave producer "".
-- vintage — a 4-digit year, or "NV" for non-vintage (common on sparkling), else "".
-- grape — only if printed or inheritable from a heading. Do not deduce it from your own knowledge of the wine: a Chablis under a "Burgundy" heading has grape "" unless "Chardonnay" appears on the page.
-- region — the most specific printed place: appellation, then region, then country. "Chablis 1er Cru" under a "France · Burgundy" heading gives region "Chablis".
-- serving — "Glass" if the wine sits in a by-the-glass section, or has a price in a glass column, else "Bottle".
-- price — printed digits only, no symbol, no thousands separator ("58", "120", "9.5").
-- currency — the symbol or code as printed ("€", "$", "£", "CHF"). If prices are bare numbers with no symbol anywhere on the page, use "".
+Task, in this order:
+1. Read the list and work out which bottles are genuinely good — quality, typicity, and value for the price asked.
+2. Compare those against the drinking record above: which grapes, regions and styles have scored well, which have scored badly.
+3. Choose ${focus !== null ? 1 : count} bottle${focus !== null ? '' : 's'}. Rank them best first. Vary them: do not pick three near-identical wines.
 
-LANGUAGE AND SCRIPT
-- The finished JSON must be readable by an English speaker. Every value goes out in the Latin alphabet — never Greek, Cyrillic, Japanese, Chinese, Korean, Hebrew or Arabic script.
-- name and producer are TRANSLITERATED, not translated: write the sound of the printed name in Latin letters, using the estate's own established romanisation where you know it. "Κτῆμα Γεροβασίλειου" becomes "Ktima Gerovassiliou", not "Gerovassiliou Estate". Keep a descriptive word that is part of the name in transliteration too.
-- grape and region are TRANSLATED to their standard English names: "Ασύρτικο" becomes "Assyrtiko", "Νεμέα" becomes "Nemea", "Αγιωργίτικο" becomes "Agiorgitiko". Use the name the wine is known by in English where one exists.
-- Headings you read for inheritance are translated the same way before you use them.
-- Digits printed in another numeral system are converted to Arabic numerals.
+Return ONLY a JSON array of ${focus !== null ? 1 : count} objects, no prose, no markdown fence:
+[{"index":0,"match":"","kind":"loved"|"new"|"crowd"|"wish","reason":""}]
 
-INHERITANCE
-- A wine inherits grape and region from the nearest heading above it, and from any heading above that one. Under "GREECE" → "Santorini" → "Assyrtiko", a wine gets region "Santorini" and grape "Assyrtiko".
-- Inheritance stops at the next heading of the same level, and does not cross a colour change (a "REDS" heading resets the whites above it).
-- A heading continued on the next page still applies to the wines beneath it.
-
-SPLITS AND DUPLICATES
-- One wine offered in two formats (glass and bottle, or 375ml and 750ml) becomes TWO objects: one "Glass" with the glass price, one "Bottle" with the bottle price.
-- One wine listed in two vintages becomes two objects.
-- If the same wine appears twice because a page overlaps with the next photo, output it once.
-- Keep the printed order, page by page.
-
-EXCLUDE
-- Anything that is not wine or sake: beer, cider, cocktails, spirits, digestifs, soft drinks, water, coffee.
-- Section headings, prices-by-the-carafe notes, service-charge lines, food items, and any marketing prose.
-- Include fortified wine (port, sherry, madeira, vin santo, mavrodaphne) and sake. Exclude shochu, umeshu and other spirits.
-
-SAKE
-- Sake belongs in the list. Map its fields as follows: name is the sake's name as printed (romaji or Japanese script, as printed); producer is the brewery or kura; vintage is "" unless a year is printed; grape is the classification when printed — Junmai, Junmai Ginjo, Junmai Daiginjo, Ginjo, Daiginjo, Honjozo, Nigori, Namazake; region is the prefecture when printed (Niigata, Hyogo, Yamagata).
-- Sake is often sold in 180ml (ichigo), 300ml, 720ml and 1.8L formats. Treat 180ml and 300ml as "Glass" and 720ml and larger as "Bottle", and split a sake offered in both into two objects as with wine.
-
-WHEN THE PHOTO IS BAD
-- Transcribe what you can read and leave unreadable fields as "". A wine with only a name and a price is a useful row; a wine with a guessed producer is not.
-- Never invent a vintage, a price, or a producer to fill a gap. "" is the correct answer.
-- If a character is ambiguous (0/O, 1/7, 5/6) and the field is a price or vintage, prefer the reading that is plausible for a wine list, and if both are plausible, leave it "".
-- If a photo contains no drinks list at all, contribute nothing from it. If none of the photos do, return [].`;
-
-export async function parsePhotos(dataUrls, key) {
-  const images = dataUrls.map(u => {
-    const m = /^data:(image\/[a-z+]+);base64,(.*)$/i.exec(u);
-    if (!m) throw new Error('Unsupported image format');
-    return { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } };
-  });
+- index: the number of the wine from the list above. Never invent an index.
+- match: a 2-4 word label for why it is here, e.g. "Straight down the line", "One step sideways", "Best value here".
+- kind: "loved" if it closely matches a style they have rated 4+; "new" if it is a deliberate stretch into something unrated; "crowd" if it is the safe choice for mixed company; "wish" if it is the most interesting bottle on the list regardless of their record.
+- reason: 1-2 sentences. Name the specific past bottle or grape × region and its score when you are leaning on their record — "you gave Assyrtiko from Santorini a 4.8 last March, and this is the same grape from the same island". ${palate.empty ? 'THERE IS NO RECORD YET: say plainly that this is a first pick with nothing to go on, and justify it on the wine itself. Never imply you know their preferences.' : 'Do not invent a rating or a bottle that is not in the record above.'}
+- If the whole list is poor for them, still return the bottles asked for but say so honestly in the reasons.`;
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -87,12 +49,8 @@ export async function parsePhotos(dataUrls, key) {
       'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 8000,
-      system: SYSTEM,
-      messages: [
-        { role: 'user', content: [...images, { type: 'text', text: PROMPT }] },
-      ],
+      model: MODEL, max_tokens: 2000, system: SYSTEM,
+      messages: [{ role: 'user', content: prompt }],
     }),
   });
 
@@ -104,21 +62,43 @@ export async function parsePhotos(dataUrls, key) {
 
   const body = await res.json();
   const text = (body.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-  const start = text.indexOf('[');
-  const end = text.lastIndexOf(']');
-  if (start === -1 || end === -1) throw new Error('The model did not return a wine list');
+  const a = text.indexOf('['), b = text.lastIndexOf(']');
+  if (a === -1 || b === -1) throw new Error('No recommendation came back');
 
   let rows;
-  try { rows = JSON.parse(text.slice(start, end + 1)); }
-  catch { throw new Error('Could not read the parsed list'); }
+  try { rows = JSON.parse(text.slice(a, b + 1)); }
+  catch { throw new Error('Could not read the recommendation'); }
 
-  return rows.filter(r => r && r.name).map(r => ({
-    name: String(r.name).trim(),
-    producer: (r.producer || '').trim(),
-    vintage: (r.vintage || '').toString().trim(),
-    grape: (r.grape || '').trim(),
-    region: (r.region || '').trim(),
-    serving: r.serving === 'Glass' ? 'Glass' : 'Bottle',
-    price: r.price ? `${(r.currency || '').trim()}${String(r.price).trim()}` : '',
-  }));
+  return rows
+    .filter(r => r && wines[r.index])
+    .map(r => ({
+      wine: wines[r.index],
+      index: r.index,
+      match: (r.match || 'Tonight\u2019s pick').trim(),
+      kind: ['loved', 'new', 'crowd', 'wish'].includes(r.kind) ? r.kind : 'new',
+      reason: (r.reason || '').trim(),
+    }))
+    .slice(0, count);
+}
+
+// Used when there is no key, or the call fails: rank by what the record already
+// says, with no invented reasoning.
+export function localPicks(wines, taste, count = 3) {
+  const score = w => {
+    const label = [w.grape, w.region].filter(Boolean).join(' · ');
+    const hit = taste.find(t => t.label === label)
+      || taste.find(t => w.grape && t.label.startsWith(w.grape));
+    return hit ? +hit.score : 0;
+  };
+  return wines.map((w, i) => ({ w, i, s: score(w) }))
+    .sort((a, b) => b.s - a.s)
+    .slice(0, count)
+    .map(({ w, i, s }) => ({
+      wine: w, index: i,
+      match: s ? 'Matches your record' : 'Worth a look',
+      kind: s >= 4 ? 'loved' : 'new',
+      reason: s
+        ? `${[w.grape, w.region].filter(Boolean).join(' from ')} has averaged ${s.toFixed(1)} in your history.`
+        : 'Nothing in your record covers this one \u2014 picked on the list itself.',
+    }));
 }
