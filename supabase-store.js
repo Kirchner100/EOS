@@ -1,3 +1,4 @@
+
 // Eos data layer — Supabase with a localStorage fallback.
 // Nothing here is Eos-specific UI; it only moves journal entries around.
 
@@ -67,6 +68,15 @@ export async function saveEntry(entry) {
   if (!client) throw new Error('not connected');
   const { data, error } = await client.from(TABLE)
     .insert(toRow(entry)).select().single();
+  if (error) throw error;
+  return fromRow(data);
+}
+
+export async function updateEntry(entry) {
+  if (!client) throw new Error('not connected');
+  const row = toRow(entry); delete row.id;
+  const { data, error } = await client.from(TABLE)
+    .update(row).eq('id', entry.id).select().single();
   if (error) throw error;
   return fromRow(data);
 }
