@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -265,6 +264,34 @@ a:hover{color:#E4623F}
 <div style="font-size:12px;color:rgba(251,243,231,0.5);margin-top:6px">{{ r.sub }}</div>
 </div>
 <div style="font-size:13.5px;line-height:1.6;color:rgba(251,243,231,0.8);text-wrap:pretty">{{ r.reason }}</div>
+<sc-if value="{{ r.hasInfo }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:9px;padding-top:6px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.6px;color:rgba(242,184,92,0.7)">WHAT THIS WINE IS</div>
+<div style="font-size:13px;line-height:1.6;color:rgba(251,243,231,0.78);text-wrap:pretty">{{ r.info.summary }}</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px">
+<sc-for list="{{ r.infoStyle }}" as="t" hint-placeholder-count="3">
+<div style="border:1px solid rgba(251,243,231,0.2);padding:4px 8px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:0.8px;color:rgba(251,243,231,0.7);text-transform:uppercase">{{ t }}</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ r.hasRev }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:7px;padding-top:6px">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.6px;color:rgba(242,184,92,0.7)">{{ r.revLabel }}</div>
+<sc-if value="{{ r.hasScore }}" hint-placeholder-val="{{ false }}">
+<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.6px;color:#F2B85C;text-align:right">{{ r.revScore }}</div>
+</sc-if>
+</div>
+<div style="font-size:13px;line-height:1.6;color:rgba(251,243,231,0.78);text-wrap:pretty">{{ r.rev.digest }}</div>
+</div>
+</sc-if>
+<sc-if value="{{ r.dossierLoading }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:8px;padding-top:4px">
+<div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(242,184,92,0.6),transparent);animation:eosPulse 1.3s ease-in-out infinite"></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">READING UP ON THIS BOTTLE</div>
+</div>
+</sc-if>
 <div style="display:flex;gap:10px;margin-top:4px">
 <button data-i="{{ $index }}" onClick="{{ openLog }}" style="flex:1;height:44px;border:none;background:#FBF3E7;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">WE CHOSE THIS</button>
 <button data-i="{{ $index }}" onClick="{{ saveWish }}" style="flex:none;height:44px;padding:0 16px;border:1px solid rgba(251,243,231,0.28);background:transparent;color:rgba(251,243,231,0.8);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">WANT TO TRY</button>
@@ -747,11 +774,11 @@ class Component extends DCLogic {
     sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmemduZmRveWVob2hlaXVpbWFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMDI4ODUsImV4cCI6MjEwMzY3ODg4NX0.LqZSkb2NCTTi1wRn2lgN0mx44gG5zM8-yyHULtUa5DE'.trim(), sbMsg:''
   };
   flash(t){ this.setState({toast:t}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2200); }
-  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=9'); return this._store; }
-  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=9'); return this._vision; }
-  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=9'); return this._lore; }
-  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=9'); return this._taster; }
-  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=9'); return this._recer; }
+  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=10'); return this._store; }
+  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=10'); return this._vision; }
+  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=10'); return this._lore; }
+  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=10'); return this._taster; }
+  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=10'); return this._recer; }
   // Every bottle that gets logged has its taste fingerprint written down, so the
   // next recommendation has something concrete to compare against.
   async fingerprintEntry(entry){
@@ -795,6 +822,7 @@ class Component extends DCLogic {
       const recs=await R.pickWines({wines,palate,note:(s.notes||{})[prof]||'',
         budget:s.budget,occasion:s.occasion,styles,profile:prof,exclude,focus},key);
       if(!recs.length) throw new Error('Nothing came back from that list.');
+      this.dossiers(recs);
       this.setState({rec:'done',recs,
         recMsg:palate.empty?'Nothing rated yet — chosen on the list itself. Rate a bottle and the next pick knows your palate.':''});
     }catch(err){
@@ -810,6 +838,29 @@ class Component extends DCLogic {
       const L=await this.lore(); const k=L.wineKey(e); const hit=L.readCached(e);
       if(hit) this.setState(p=>({infos:{...p.infos,[k]:hit}}));
     }catch(err){}
+  }
+  // Primer + review digest for each recommended wine, loaded as soon as picks land.
+  async dossiers(recs){
+    let key=this.state.apiKey;
+    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(e){} }
+    if(!key) return;
+    let L; try{ L=await this.lore(); }catch(e){ return; }
+    let shared=null;
+    try{ const S=await this.store(); if(S.isConnected()) shared={get:kk=>S.fetchInfo(kk),put:(kk,i)=>S.saveInfo(kk,i)}; }catch(e){}
+    for(const r of recs){
+      const w=r.wine||{}; const e={wineName:w.name,producer:w.producer,vintage:w.vintage,grape:w.grape,region:w.region,price:w.price,currency:w.currency};
+      const k=L.wineKey(e);
+      if(!this.state.infos[k]){
+        this.setState(p=>({infoState:{...p.infoState,[k]:'loading'}}));
+        L.fetchInfo(e,key,shared).then(info=>this.setState(p=>({infos:{...p.infos,[k]:info},infoState:{...p.infoState,[k]:'done'}})))
+          .catch(()=>this.setState(p=>({infoState:{...p.infoState,[k]:'error'}})));
+      }
+      if(!(this.state.reviews||{})[k]){
+        this.setState(p=>({reviewState:{...(p.reviewState||{}),[k]:'loading'}}));
+        L.fetchReviews(e,key,shared).then(rev=>this.setState(p=>({reviews:{...(p.reviews||{}),[k]:rev},reviewState:{...p.reviewState,[k]:'done'}})))
+          .catch(err=>this.setState(p=>({reviewState:{...p.reviewState,[k]:'error'},reviewMsg:{...(p.reviewMsg||{}),[k]:(err&&err.message)||''}})));
+      }
+    }
   }
   async learn(id){
     const e=this.state.entries.find(x=>x.id===id); if(!e) return;
@@ -1026,9 +1077,16 @@ class Component extends DCLogic {
     });
     const recList=(s.recs||[]).map(r=>{
       const w=r.wine||{};
+      const k=[w.name,w.producer,w.vintage].filter(Boolean).join('|').toLowerCase();
+      const info=s.infos[k]||null, rev=(s.reviews||{})[k]||null;
+      const rs=(s.reviewState||{})[k], is=s.infoState[k];
       return {match:r.match,matchUpper:(r.match||'').toUpperCase(),reason:r.reason,name:w.name,price:w.price,
         badgeFg:BADGE[r.kind]||CREAM, wineObj:w,
-        sub:[w.producer,w.vintage,w.region,w.serving].filter(Boolean).join(' · ')};
+        sub:[w.producer,w.vintage,w.region,w.serving].filter(Boolean).join(' · '),
+        info, hasInfo:!!info, infoStyle:info?info.style:[],
+        rev, hasRev:!!rev, revScore:rev?[rev.score,rev.critic].filter(Boolean).join(' · '):'', hasScore:!!(rev&&(rev.score||rev.critic)),
+        revLabel:rev&&rev.found===false?'NO REVIEWS FOUND \u2014 ABOUT THE PRODUCER':'WHAT REVIEWERS SAY',
+        dossierLoading:(is==='loading'||rs==='loading')&&!(info&&rev)};
     });
     return {
       profile:prof, profilePoss:prof==='Both'?'our':prof+'\u2019s', profilePossCap:poss,
