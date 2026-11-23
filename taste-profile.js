@@ -1,3 +1,4 @@
+import { claudeFetch } from './claude.js';
 // A bottle's taste fingerprint, written by Claude the moment it is logged, so
 // that every later recommendation has something concrete to compare against.
 // Fingerprints are facts about a bottle, not about a person, so they are cached
@@ -72,14 +73,7 @@ ${SHAPE}
 - likeIf: one short clause completing "someone who likes this also tends to like…".
 For sake, read acidity and body normally, set tannin "none" and oak "none", and use the polishing grade in family.`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
+  const res = await claudeFetch(key, {
     body: JSON.stringify({ model: MODEL, max_tokens: 600, messages: [{ role: 'user', content: prompt }] }),
   });
   if (!res.ok) throw new Error(`Anthropic returned ${res.status}`);

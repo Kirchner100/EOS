@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,7 +27,7 @@ a:hover{color:#E4623F}
 <div style="position:absolute;inset:0;background:#14132B"></div>
 <div style="position:absolute;inset:0;display:flex;flex-direction:column">
 
-<div style="flex:none;height:156px;padding:54px 26px 0;border-bottom:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column;justify-content:flex-start">
+<div style="flex:none;height:128px;padding:54px 26px 0;border-bottom:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column;justify-content:flex-start">
 <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
 <div style="min-width:0">
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:{{ titleSize }};color:#FBF3E7;letter-spacing:-0.8px;line-height:1;white-space:nowrap">{{ screenTitle }}</div>
@@ -48,11 +47,6 @@ a:hover{color:#E4623F}
 </svg>
 <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.4px;color:rgba(251,243,231,0.45);border-bottom:1px solid rgba(251,243,231,0.25)">SETTINGS</span>
 </button>
-</div>
-<div style="display:flex;margin-top:auto;border:1px solid rgba(251,243,231,0.18);margin-bottom:14px">
-<sc-for list="{{ profileTabs }}" as="p" hint-placeholder-count="3">
-<button data-v="{{ p.v }}" onClick="{{ setProfile }}" style="{{ p.style }}">{{ p.label }}</button>
-</sc-for>
 </div>
 </div>
 
@@ -588,7 +582,7 @@ a:hover{color:#E4623F}
 </div>
 <div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">{{ noteHeading }}</div>
 <div style="border-top:1px solid rgba(251,243,231,0.14);padding-top:10px">
-<textarea value="{{ personalNote }}" onChange="{{ editNote }}" placeholder="Anything Eos should know — no oaky whites, always ask for the older vintage, Marios hates Merlot" style="width:100%;min-height:86px;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;line-height:1.6;color:#FBF3E7;padding:2px 0 10px;resize:none"></textarea>
+<textarea value="{{ personalNote }}" onChange="{{ editNote }}" placeholder="Anything Eos should know — no oaky whites, always ask for the older vintage, never Merlot" style="width:100%;min-height:86px;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:13px;line-height:1.6;color:#FBF3E7;padding:2px 0 10px;resize:none"></textarea>
 <div style="font-size:11.5px;line-height:1.6;color:rgba(251,243,231,0.38);padding-top:12px;max-width:300px">Passed to Eos with every recommendation, alongside the weights above.</div>
 </div>
 </div>
@@ -616,7 +610,7 @@ a:hover{color:#E4623F}
 <div style="border-top:1px solid rgba(251,243,231,0.14);padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:4px">
 <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">ANTHROPIC API KEY</div>
 <input value="{{ apiKey }}" onChange="{{ editApiKey }}" placeholder="sk-ant-…" style="background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FBF3E7;padding:2px 0">
-<div style="font-size:11.5px;line-height:1.5;color:rgba(251,243,231,0.38);padding-top:5px">Kept on this phone only. Without it, Eos cannot read a list or write taste notes.</div>
+<div style="font-size:11.5px;line-height:1.5;color:rgba(251,243,231,0.38);padding-top:5px">{{ apiKeyHint }}</div>
 </div>
 <div style="padding:26px 0 6px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">SETTINGS</div>
 <div style="display:flex;flex-direction:column;border-top:1px solid rgba(251,243,231,0.14)">
@@ -628,31 +622,26 @@ a:hover{color:#E4623F}
 </sc-for>
 </div>
 <div style="padding:26px 0 6px;display:flex;align-items:baseline;justify-content:space-between">
-<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">STORAGE</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.35)">ACCOUNT</div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:{{ sbColor }}">{{ sbStatus }}</div>
 </div>
 <div style="border-top:1px solid rgba(251,243,231,0.14);display:flex;flex-direction:column">
-<div style="padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:4px">
-<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">PROJECT URL</div>
-<input value="{{ sbUrl }}" onChange="{{ editSbUrl }}" placeholder="https://xxxx.supabase.co" style="background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FBF3E7;padding:2px 0">
+<sc-for list="{{ accountRows }}" as="a" hint-placeholder-count="3">
+<div style="display:flex;align-items:baseline;justify-content:space-between;gap:14px;padding:15px 0;border-bottom:1px solid rgba(251,243,231,0.1)">
+<div style="flex:none;font-size:13px;color:#FBF3E7">{{ a.label }}</div>
+<div style="min-width:0;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:rgba(242,184,92,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ a.value }}</div>
 </div>
-<div style="padding:14px 0;border-bottom:1px solid rgba(251,243,231,0.1);display:flex;flex-direction:column;gap:4px">
-<div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">ANON PUBLIC KEY</div>
-<input value="{{ sbKey }}" onChange="{{ editSbKey }}" placeholder="eyJhbGciOi…" style="background:transparent;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#FBF3E7;padding:2px 0;text-overflow:ellipsis">
+</sc-for>
 </div>
-</div>
-<sc-if value="{{ sbMsg }}" hint-placeholder-val="{{ true }}">
+<sc-if value="{{ sbMsg }}" hint-placeholder-val="{{ false }}">
 <div style="padding:12px 0 0;font-size:12px;line-height:1.5;color:{{ sbColor }}">{{ sbMsg }}</div>
 </sc-if>
-<div style="display:flex;gap:10px;padding-top:16px">
-<button onClick="{{ connectSb }}" style="flex:1;height:44px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">{{ sbAction }}</button>
-<button onClick="{{ pushSb }}" style="flex:none;height:44px;padding:0 16px;border:1px solid rgba(251,243,231,0.28);background:transparent;color:rgba(251,243,231,0.8);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.4px;cursor:pointer">PUSH LOCAL</button>
-</div>
+<button onClick="{{ signOut }}" style="margin-top:16px;height:44px;border:1px solid rgba(228,98,63,0.5);background:transparent;color:#F09274;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">SIGN OUT</button>
 <div style="display:flex;align-items:baseline;justify-content:space-between;padding-top:22px;border-top:1px solid rgba(251,243,231,0.1);margin-top:20px">
 <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.4)">APP VERSION</div>
 <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.6px;color:#F2B85C">{{ appVersion }}</div>
 </div>
-<div style="font-size:11.5px;line-height:1.6;color:rgba(251,243,231,0.38);padding-top:18px;max-width:300px">Connected, both phones read and write the same table and pick up each other's entries live. Unconnected, entries stay on this phone.</div>
+<div style="font-size:11.5px;line-height:1.6;color:rgba(251,243,231,0.38);padding-top:18px;max-width:300px">Your history is private to this account and follows you to any phone you sign in on. Entries made offline are kept here and sent up when you reconnect.</div>
 </div>
 </div>
 </sc-if>
@@ -706,14 +695,6 @@ a:hover{color:#E4623F}
 </div>
 </div>
 
-<div style="display:flex;flex-direction:column;gap:9px;padding-bottom:4px">
-<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.6px;color:rgba(251,243,231,0.45)">WHOSE HISTORY DOES THIS GO IN</div>
-<div style="display:flex;gap:8px">
-<sc-for list="{{ logUserTabs }}" as="u" hint-placeholder-count="3">
-<button data-v="{{ u.v }}" onClick="{{ setLogUser }}" style="{{ u.style }}">{{ u.label }}</button>
-</sc-for>
-</div>
-</div>
 <div style="display:flex;gap:16px;align-items:baseline">
 <input value="{{ logPrice }}" onChange="{{ editLogPrice }}" placeholder="Price" style="flex:1;min-width:0;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-family:'IBM Plex Mono',monospace;font-size:13px;color:#FBF3E7;padding:7px 0">
 <button onClick="{{ cycleCurrency }}" style="flex:none;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);color:#F2B85C;font-family:'IBM Plex Mono',monospace;font-size:13px;padding:7px 6px;cursor:pointer">{{ logCurrency }}</button>
@@ -731,7 +712,7 @@ a:hover{color:#E4623F}
 <div style="width:100%;background:#1B1A33;border:1px solid rgba(251,243,231,0.16);padding:26px 24px;display:flex;flex-direction:column;gap:14px;animation:eosRise .25s cubic-bezier(0.22,1,0.36,1)">
 <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.6px;color:#F09274">DELETE FROM HISTORY</div>
 <div style="font-family:'Fraunces',serif;font-weight:300;font-size:22px;line-height:1.25;color:#FBF3E7;letter-spacing:-0.4px;text-wrap:pretty">Delete {{ confirmName }}?</div>
-<div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.55)">This removes it from both phones and from the taste profile. It cannot be undone.</div>
+<div style="font-size:12.5px;line-height:1.55;color:rgba(251,243,231,0.55)">This removes it from your history on every device and from the taste profile. It cannot be undone.</div>
 <div style="display:flex;gap:10px;margin-top:6px">
 <button onClick="{{ cancelDelete }}" style="flex:1;height:46px;border:1px solid rgba(251,243,231,0.25);background:transparent;color:rgba(251,243,231,0.8);font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">KEEP IT</button>
 <button onClick="{{ doDelete }}" style="flex:1;height:46px;border:none;background:#E4623F;color:#FBF3E7;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.6px;cursor:pointer">DELETE</button>
@@ -744,9 +725,67 @@ a:hover{color:#E4623F}
 <div style="position:absolute;left:26px;right:26px;bottom:104px;z-index:65;background:#FBF3E7;color:#14132B;padding:13px 15px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.2px;animation:eosRise .26s ease-out">{{ toast }}</div>
 </sc-if>
 
+<sc-if value="{{ authGate }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Sign in" style="position:absolute;inset:0;z-index:90;background:#14132B;display:flex;flex-direction:column;overflow-y:auto">
+<div style="flex:none;padding:104px 30px 0;display:flex;flex-direction:column;gap:12px">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:68px;line-height:0.9;color:#FBF3E7;letter-spacing:-2.4px">Eos</div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.8px;color:rgba(242,184,92,0.8)">WINE COMPANION</div>
+</div>
+<div style="flex:none;position:relative;height:30px;margin:30px 30px 0">
+<div style="position:absolute;left:0;right:0;bottom:0;height:6px;background:linear-gradient(90deg,#14132B,#4B2E63 28%,#7A2438 52%,#E4623F 78%,#F2B85C);border:1px solid rgba(251,243,231,0.14)"></div>
+<div style="position:absolute;right:28px;bottom:3px;width:44px;height:22px;border-radius:22px 22px 0 0;background:radial-gradient(circle at 50% 100%,#FFF3DA,#F2B85C 55%,#E4623F);border:1px solid rgba(251,243,231,0.9);border-bottom:none"></div>
+</div>
+<sc-if value="{{ authChecking }}" hint-placeholder-val="{{ false }}">
+<div style="padding:44px 30px 0;display:flex;flex-direction:column;gap:14px">
+<div style="width:100%;height:1px;background:linear-gradient(90deg,#F2B85C,transparent);animation:eosPulse 1.3s ease-in-out infinite"></div>
+<div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.6px;color:rgba(251,243,231,0.45)">{{ authCheckLine }}</div>
+</div>
+</sc-if>
+<sc-if value="{{ authForm }}" hint-placeholder-val="{{ true }}">
+<form onSubmit="{{ submitAuth }}" style="padding:34px 30px 48px;display:flex;flex-direction:column;gap:22px;margin:0">
+<div style="font-family:'Fraunces',serif;font-weight:300;font-size:25px;line-height:1.3;color:#FBF3E7;letter-spacing:-0.4px;text-wrap:pretty">{{ authTitle }}<br><span style="font-style:italic;color:#F2B85C">{{ authSub }}</span></div>
+<sc-if value="{{ authShowTabs }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;border:1px solid rgba(251,243,231,0.18)">
+<sc-for list="{{ authTabs }}" as="m" hint-placeholder-count="2">
+<button type="button" data-v="{{ m.v }}" onClick="{{ setAuthMode }}" style="{{ m.style }}">{{ m.label }}</button>
+</sc-for>
+</div>
+</sc-if>
+<div style="display:flex;flex-direction:column">
+<sc-if value="{{ authIsSignup }}" hint-placeholder-val="{{ false }}">
+<input value="{{ aName }}" onChange="{{ editAName }}" placeholder="First name" autoComplete="given-name" style="width:100%;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:16px;color:#FBF3E7;padding:13px 0;border-radius:0">
+</sc-if>
+<sc-if value="{{ authNeedsEmail }}" hint-placeholder-val="{{ true }}">
+<input type="email" value="{{ aEmail }}" onChange="{{ editAEmail }}" placeholder="Email" autoComplete="email" autoCapitalize="none" style="width:100%;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:16px;color:#FBF3E7;padding:13px 0;border-radius:0">
+</sc-if>
+<sc-if value="{{ authNeedsPass }}" hint-placeholder-val="{{ true }}">
+<input type="password" value="{{ aPass }}" onChange="{{ editAPass }}" placeholder="{{ passPlaceholder }}" autoComplete="{{ passAuto }}" style="width:100%;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:16px;color:#FBF3E7;padding:13px 0;border-radius:0">
+</sc-if>
+<sc-if value="{{ authIsSignup }}" hint-placeholder-val="{{ false }}">
+<input value="{{ aInvite }}" onChange="{{ editAInvite }}" placeholder="Invite code" autoCapitalize="characters" autoComplete="off" style="width:100%;background:transparent;border:none;border-bottom:1px solid rgba(251,243,231,0.2);outline:none;font-size:16px;color:#FBF3E7;padding:13px 0;border-radius:0;font-family:'IBM Plex Mono',monospace;letter-spacing:1.6px;text-transform:uppercase">
+</sc-if>
+</div>
+<sc-if value="{{ aMsg }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:12.5px;line-height:1.5;color:{{ aMsgColor }};text-wrap:pretty">{{ aMsg }}</div>
+</sc-if>
+<button type="submit" style="height:52px;border:none;background:#F2B85C;color:#14132B;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:2.4px;cursor:pointer">{{ authAction }}</button>
+<sc-if value="{{ authShowForgot }}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{ goForgot }}" style="align-self:flex-start;min-height:44px;background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.5)"><span style="border-bottom:1px solid rgba(251,243,231,0.25)">FORGOTTEN YOUR PASSWORD</span></button>
+</sc-if>
+<sc-if value="{{ authShowBack }}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{ backToSignin }}" style="align-self:flex-start;min-height:44px;background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.4px;color:rgba(251,243,231,0.5)"><span style="border-bottom:1px solid rgba(251,243,231,0.25)">BACK TO SIGN IN</span></button>
+</sc-if>
+<sc-if value="{{ authIsSignup }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:12px;line-height:1.55;color:rgba(251,243,231,0.42);max-width:290px">Eos is invite-only for now. The code comes from whoever sent you the link.</div>
+</sc-if>
+</form>
+</sc-if>
+</div>
+</sc-if>
+
 </x-import>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:940},&quot;startProfile&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Lisa&quot;,&quot;Marios&quot;,&quot;Both&quot;],&quot;default&quot;:&quot;Lisa&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;journalView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;timeline&quot;,&quot;list&quot;,&quot;gallery&quot;],&quot;default&quot;:&quot;timeline&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:480,&quot;height&quot;:940},&quot;journalView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;timeline&quot;,&quot;list&quot;,&quot;gallery&quot;],&quot;default&quot;:&quot;timeline&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 const GOLD='#F2B85C',CREAM='#FBF3E7';
 const SEED=[];
 const GODS=[
@@ -767,28 +806,26 @@ const WORDS={1:'Poured it out',2:'Not for us',3:'Perfectly fine',4:'Would order 
 const BADGE={loved:GOLD,new:'#F09274',wish:'#C0A6E0',crowd:CREAM};
 class Component extends DCLogic {
   state={
-    profile:this.props.startProfile||'Lisa',
+    profile:'',
     tab:'home', scan:'idle', photos:[], wines:[], apiKey:'', scanMsg:'',
     budget:'', occasion:'', rec:'empty', recs:[], recMsg:'', entries:SEED,
-    view:this.props.journalView||'timeline', who:'Lisa', kind:'Logged', search:'',
+    view:this.props.journalView||'timeline', who:'', kind:'Logged', search:'',
     log:null, rating:4, logPrice:'', logCurrency:'€', logServing:'Bottle', logNotes:'', logPlace:'', toast:'',
     settingsOpen:false, notes:{}, confirmDel:null, fGrape:'', fProducer:'', fRegion:'',
     openId:null, infos:{}, infoState:{}, infoMsg:{},
-    sbState:'local',
-    sbUrl:'https://hfzgnfdoyehoheiuimac.supabase.co',
-    sbKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmemduZmRveWVob2hlaXVpbWFjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgxMDI4ODUsImV4cCI6MjEwMzY3ODg4NX0.LqZSkb2NCTTi1wRn2lgN0mx44gG5zM8-yyHULtUa5DE'.trim(), sbMsg:''
+    sbState:'local', sbMsg:'', me:null,
+    auth:'checking', authMode:'signin', aEmail:'', aPass:'', aName:'', aInvite:'', aMsg:'', aErr:false, aBusy:false
   };
   flash(t){ this.setState({toast:t}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2200); }
-  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=11'); return this._store; }
-  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=11'); return this._vision; }
-  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=11'); return this._lore; }
-  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=11'); return this._taster; }
-  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=11'); return this._recer; }
+  async store(){ if(!this._store) this._store=await import('./supabase-store.js?v=12'); return this._store; }
+  async vision(){ if(!this._vision) this._vision=await import('./parse-menu.js?v=12'); return this._vision; }
+  async lore(){ if(!this._lore) this._lore=await import('./wine-info.js?v=12'); return this._lore; }
+  async taster(){ if(!this._taster) this._taster=await import('./taste-profile.js?v=12'); return this._taster; }
+  async recer(){ if(!this._recer) this._recer=await import('./recommend.js?v=12'); return this._recer; }
   // Every bottle that gets logged has its taste fingerprint written down, so the
   // next recommendation has something concrete to compare against.
   async fingerprintEntry(entry){
-    let key=this.state.apiKey;
-    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(e){} }
+    const key=this.key();
     if(!key) return;
     try{
       const T=await this.taster();
@@ -811,8 +848,7 @@ class Component extends DCLogic {
     const exclude=focus===null?shown.filter(i=>i<wines.length):[];
     if(focus===null&&exclude.length>=wines.length){ this.setState({recMsg:'That is the whole list — nothing left to show.'}); return; }
     this.setState({tab:'rec',rec:'thinking',recMsg:'',shownIdx:shown,askIdx:focus});
-    let key=s.apiKey;
-    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(e){} }
+    const key=this.key();
     const taste=this.buildTaste(prof);
     let R; try{ R=await this.recer(); }catch(e){ this.setState({rec:'done',recs:[],recMsg:'Could not load the recommender.'}); return; }
     if(!key){
@@ -823,7 +859,7 @@ class Component extends DCLogic {
     }
     try{
       const T=await this.taster();
-      const palate=T.brief(s.entries,T.readAll(),prof);
+      const palate=T.brief(s.entries,T.readAll(),'Both');
       const recs=await R.pickWines({wines,palate,note:(s.notes||{})[prof]||'',
         budget:s.budget,occasion:s.occasion,styles,profile:prof,exclude,focus},key);
       if(!recs.length) throw new Error('Nothing came back from that list.');
@@ -846,8 +882,7 @@ class Component extends DCLogic {
   }
   // Primer + review digest for each recommended wine, loaded as soon as picks land.
   async dossiers(recs){
-    let key=this.state.apiKey;
-    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(e){} }
+    const key=this.key();
     if(!key) return;
     let L; try{ L=await this.lore(); }catch(e){ return; }
     let shared=null;
@@ -877,8 +912,7 @@ class Component extends DCLogic {
         infoMsg:{...p.infoMsg,[k]:'wine-info.js did not load \u2014 '+((err&&err.message)||'unknown error')+'. Open /wine-info.js in the browser to check it is there.'}}));
       return;
     }
-    let key=this.state.apiKey;
-    if(!key){ try{ const v=await this.vision(); key=v.readKey(); }catch(err){} }
+    const key=this.key();
     if(!key){ this.setState({settingsOpen:true}); this.flash('ADD YOUR API KEY FIRST'); return; }
     this.setState(p=>({infoState:{...p.infoState,[k]:'loading'},infoMsg:{...p.infoMsg,[k]:''}}));
     let shared=null;
@@ -899,7 +933,6 @@ class Component extends DCLogic {
     const now=Date.now(), bag={};
     this.state.entries.forEach(e=>{
       if(e.rating==null) return;
-      if(prof!=='Both'&&e.user!==prof&&e.user!=='Both') return;
       const g=(e.grape||'').trim(), r=(e.region||'').trim();
       if(!g&&!r) return;
       const label=[g,r].filter(Boolean).join(' \u00b7 ');
@@ -945,7 +978,7 @@ class Component extends DCLogic {
     }catch(err){ this.setState({scan:'error',scanMsg:(err&&err.message)||'Could not read that photo.'}); }
   }
   async runParse(){
-    const {photos,apiKey}=this.state;
+    const {photos}=this.state, apiKey=this.key();
     if(!photos.length){ this.pickFiles(); return; }
     const run=(this._parseRun=(this._parseRun||0)+1);
     this.setState({scan:'parsing',scanMsg:''});
@@ -962,44 +995,81 @@ class Component extends DCLogic {
     }catch(err){ if(run!==this._parseRun) return; this.setState({scan:'error',scanMsg:(err&&err.message)||'The read failed.'}); }
   }
   async componentDidMount(){
-    try{ const v=await this.vision(); const k=v.readKey(); if(k) this.setState({apiKey:k}); }catch(err){}
+    const recovery=/type=recovery/.test(location.hash||'');
     try{ const n=JSON.parse(localStorage.getItem('eos.notes.v1')); if(n) this.setState({notes:n}); }catch(err){}
     try{ const c=JSON.parse(localStorage.getItem('eos.wineinfo.v2')); if(c) this.setState({infos:c}); }catch(err){}
-    let st; try{ st=await this.store(); }catch(err){ return; }
-    const local=st.readLocal(); if(local&&local.length) this.setState({entries:local});
-    const cfg=st.readConfig();
-    if(cfg.url&&cfg.key){ this.setState({sbUrl:cfg.url,sbKey:cfg.key}); this.doConnect(cfg.url,cfg.key); }
+    try{ const v=await this.vision(); const k=v.readKey(); if(k) this.setState({apiKey:k}); }catch(err){}
+    let S; try{ S=await this.store(); await S.init(); }
+    catch(err){ this.setState({auth:'out',aMsg:'Could not reach Eos. Check the connection and reload.',aErr:true}); return; }
+    this._authOff=S.onAuth(ev=>{
+      if(ev==='PASSWORD_RECOVERY') this.setState({auth:'out',authMode:'newpass',aMsg:''});
+      if(ev==='SIGNED_OUT') this.setState({auth:'out',sbState:'local'});
+    });
+    let session=null; try{ session=await S.currentSession(); }catch(err){}
+    if(recovery&&session){ this.setState({auth:'out',authMode:'newpass'}); return; }
+    if(session) this.enter(); else this.setState({auth:'out'});
   }
-  componentWillUnmount(){ if(this._unsub) this._unsub(); }
+  componentWillUnmount(){ if(this._unsub) this._unsub(); if(this._authOff) this._authOff(); }
+  // Own key first; otherwise the shared key if this account's invite included it.
+  key(){ const s=this.state; return s.apiKey||(s.me&&s.me.shared_key?'shared':''); }
   persist(entries){ this.store().then(st=>st.writeLocal(entries)).catch(()=>{}); }
-  async doConnect(url,key){
-    const st=await this.store();
-    this.setState({sbState:'connecting',sbMsg:''});
+  async enter(){
+    const S=await this.store();
+    this.setState({auth:'loading',sbState:'connecting',sbMsg:''});
+    let p=null; try{ p=await S.fetchProfile(); }catch(err){}
+    const u=S.me()||{};
+    const me={display_name:(u.email||'').split('@')[0],shared_key:false,...(p||{}),email:u.email||''};
+    try{ const C=await import('./claude.js'); const cfg=S.config();
+      C.setProxy({url:cfg.url+'/functions/v1/claude',anon:cfg.key,token:()=>S.accessToken()}); }catch(err){}
+    const local=S.readLocal(u.id)||[];
+    this.setState({me,profile:me.display_name,who:me.display_name,auth:'in',aPass:'',aMsg:'',entries:local});
     try{
-      await st.connect(url,key);
-      st.writeConfig(url,key);
-      let rows=await st.fetchEntries();
+      let rows=await S.fetchEntries();
       const isUuid=x=>/^[0-9a-f-]{36}$/i.test(x);
-      const stored=(st.readLocal&&st.readLocal())||[];
-      const seen=new Set(this.state.entries.map(e=>e.id));
-      const localAll=[...this.state.entries,...stored.filter(e=>!seen.has(e.id))];
-      const serverIds=new Set(rows.map(r=>r.id));
-      const onlyLocal=localAll.filter(e=>!isUuid(e.id)&&!rows.some(r=>r.wineName===e.wineName&&r.date===e.date&&r.user===e.user));
+      const onlyLocal=local.filter(e=>!isUuid(e.id)&&!rows.some(r=>r.wineName===e.wineName&&r.date===e.date));
       let pushed=0;
-      if(onlyLocal.length){ try{ pushed=await st.pushLocal(onlyLocal); rows=await st.fetchEntries(); }catch(e){} }
-      const merged=[...rows,...onlyLocal.filter(()=>!pushed)];
+      if(onlyLocal.length){ try{ pushed=await S.pushLocal(onlyLocal); rows=await S.fetchEntries(); }catch(err){} }
+      const merged=pushed?rows:[...rows,...onlyLocal];
       this.setState({sbState:'connected',entries:merged,
-        sbMsg:pushed?pushed+' entries from this phone sent to Supabase.':(onlyLocal.length?'Could not push '+onlyLocal.length+' local entries — try PUSH LOCAL.':'')});
+        sbMsg:pushed?pushed+' entries from this phone added to your account.':(onlyLocal.length?onlyLocal.length+' entries are still on this phone only.':'')});
       this.persist(merged);
-      try{ const map=await st.fetchAllInfo(); const L=await this.lore();
+      try{ const map=await S.fetchAllInfo(); const L=await this.lore();
         this.setState({infos:L.mergeCache(map)});
-        try{ const T=await this.taster(); T.mergeCache(map); }catch(e){}
+        try{ const T=await this.taster(); T.mergeCache(map); }catch(err){}
       }catch(err){}
       if(this._unsub) this._unsub();
-      this._unsub=st.subscribe(async()=>{ try{ this.setState({entries:await st.fetchEntries()}); }catch(e){} });
-    }catch(err){
-      this.setState({sbState:'error',sbMsg:(err&&err.message)||'Could not reach that project.'});
-    }
+      this._unsub=S.subscribe(async()=>{ try{ this.setState({entries:await S.fetchEntries()}); }catch(err){} });
+    }catch(err){ this.setState({sbState:'error',sbMsg:(err&&err.message)||'Could not load your history.'}); }
+  }
+  async submitAuth(){
+    const s=this.state, mode=s.authMode, email=(s.aEmail||'').trim(), pass=s.aPass||'';
+    if(s.aBusy) return;
+    const need=m=>this.setState({aMsg:m,aErr:true});
+    if(mode!=='newpass'&&!/^\S+@\S+\.\S+$/.test(email)) return need('Enter your email address.');
+    if(mode==='signin'&&!pass) return need('Enter your password.');
+    if((mode==='signup'||mode==='newpass')&&pass.length<8) return need('Use at least 8 characters for the password.');
+    if(mode==='signup'&&!(s.aName||'').trim()) return need('Add your first name. Eos greets you by it.');
+    if(mode==='signup'&&!(s.aInvite||'').trim()) return need('Eos is invite-only for now. Enter your code.');
+    this.setState({aBusy:true,aMsg:''});
+    try{
+      const S=await this.store();
+      if(mode==='signin'){ await S.signIn(email,pass); this.setState({aBusy:false}); this.enter(); return; }
+      if(mode==='signup'){
+        const r=await S.signUp({email,password:pass,name:s.aName.trim(),invite:s.aInvite.trim()});
+        if(r.confirm){ this.setState({aBusy:false,authMode:'signin',aPass:'',aMsg:'Account created. Open the confirmation email we just sent, then sign in here.',aErr:false}); return; }
+        this.setState({aBusy:false}); this.enter(); return;
+      }
+      if(mode==='forgot'){ await S.resetPassword(email); this.setState({aBusy:false,authMode:'signin',aMsg:'If that address has an account, a reset link is on its way.',aErr:false}); return; }
+      if(mode==='newpass'){ await S.setPassword(pass); try{ history.replaceState(null,'',location.pathname); }catch(err){}
+        this.setState({aBusy:false,authMode:'signin'}); this.enter(); return; }
+    }catch(err){ this.setState({aBusy:false,aMsg:(err&&err.message)||'That did not work. Try again.',aErr:true}); }
+  }
+  async signOut(){
+    if(this._unsub){ this._unsub(); this._unsub=null; }
+    try{ const S=await this.store(); await S.signOut(); S.clearLocal(); }catch(err){}
+    this._parseRun=(this._parseRun||0)+1;
+    this.setState({auth:'out',authMode:'signin',me:null,profile:'',who:'',entries:[],apiKey:'',notes:{},infos:{},infoState:{},reviews:{},reviewState:{},
+      settingsOpen:false,tab:'home',scan:'idle',photos:[],wines:[],recs:[],rec:'empty',sbState:'local',sbMsg:'',aPass:'',aMsg:''});
   }
   async updateEntry(entry){
     if(this.state.sbState!=='connected'||!/^[0-9a-f-]{36}$/i.test(entry.id)) return;
@@ -1034,10 +1104,9 @@ class Component extends DCLogic {
   }
   monoStyle(active){ return `background:transparent;border:none;padding:0;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.2px;color:${active?CREAM:'rgba(251,243,231,0.3)'}`; }
   renderVals(){
-    const s=this.state, prof=s.profile;
+    const s=this.state, prof=s.profile, hasKey=!!this.key(), mode=s.authMode;
     const poss=prof==='Both'?'Our':prof+'\u2019s';
     const ent=s.entries.filter(e=>{
-      if(s.who!=='Both'&&e.user!==s.who&&e.user!=='Both') return false;
       if(s.kind==='Logged'?e.rating==null:e.rating!=null) return false;
       if(s.fGrape&&(e.grape||'')!==s.fGrape) return false;
       if(s.fProducer&&(e.producer||'')!==s.fProducer) return false;
@@ -1063,7 +1132,7 @@ class Component extends DCLogic {
         learnHint:'A plain-English primer on the grape, the place and the year. Written once, then kept.',
         tile:r>=5?'#3A1725':r>=4?'#2C1730':r>=3?'#1F1A33':'#181731'};
     });
-    const mine=s.entries.filter(e=>e.rating!=null&&(prof==='Both'||e.user===prof||e.user==='Both'))
+    const mine=s.entries.filter(e=>e.rating!=null)
       .slice().sort((x,y)=>y.date.localeCompare(x.date))
       .map(e=>({...e,scoreLabel:e.rating.toFixed(1),
         subUpper:[e.producer&&e.producer+' '+(e.vintage||''),e.region,e.restaurant].filter(Boolean).join(' · ').toUpperCase(),
@@ -1097,7 +1166,7 @@ class Component extends DCLogic {
       profile:prof, profilePoss:prof==='Both'?'our':prof+'\u2019s', profilePossCap:poss,
       titleSize:s.tab==='rec'?'28px':'33px',
       scanHasWork:s.scan!=='idle'||s.photos.length>0,
-      appVersion:'v11 \u00b7 5 OCT 2026',
+      appVersion:'v12 \u00b7 16 NOV 2026',
       isHome:s.tab==='home',
       ...(()=>{
         const name=prof==='Both'?'Lisa & Marios':prof;
@@ -1113,7 +1182,7 @@ class Component extends DCLogic {
         else if(days<30){ line='It\u2019s been '+days+' days since '+you+' had wine.'; punch='The cellar is starting to worry. Let\u2019s make that 0.'; }
         else { line='It\u2019s been '+days+' days since '+you+' had wine.'; punch='Did '+you+' move somewhere without vines? Let\u2019s make that 0.'; }
         const h=new Date().getHours(), greet=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
-        const logged=mine.length, wishes=s.entries.filter(e=>e.rating==null&&(prof==='Both'||e.user===prof||e.user==='Both')).length;
+        const logged=mine.length, wishes=s.entries.filter(e=>e.rating==null).length;
         return {homeGreeting:greet+', '+name+'.', homeLine:line, homePunch:punch,
           homeLinks:[
             {v:'scan',title:'Scan',note:s.wines.length?s.wines.length+' WINES READ \u2014 PICK UP WHERE YOU LEFT OFF':'READ TONIGHT\u2019S LIST'},
@@ -1173,17 +1242,34 @@ class Component extends DCLogic {
       tasteChips:taste.slice(0,3).map(t=>({label:t.label.split(' · ')[0].toUpperCase(),score:t.score})),
       tasteRows:taste, tasteEmpty:taste.length===0,
       settingRows:[{label:'Model',value:'SONNET-4-6'},{label:'Export backup',value:s.entries.length+' ENTRIES'},{label:'Import backup',value:'MERGE'}],
-      sbUrl:s.sbUrl, sbKey:s.sbKey, sbMsg:s.sbMsg,
-      sbStatus:{local:'LOCAL ONLY',connecting:'CONNECTING…',connected:'SUPABASE · LIVE',error:'NOT CONNECTED'}[s.sbState],
+      sbMsg:s.sbMsg,
+      sbStatus:{local:'OFFLINE',connecting:'SYNCING\u2026',connected:'SYNCED \u00b7 LIVE',error:'NOT SYNCED'}[s.sbState],
       sbColor:{local:'rgba(251,243,231,0.45)',connecting:GOLD,connected:'#8FD69A',error:'#F09274'}[s.sbState],
-      sbAction:s.sbState==='connected'?'RECONNECT':'CONNECT',
-      editSbUrl:e=>this.setState({sbUrl:e.target.value}),
-      editSbKey:e=>this.setState({sbKey:e.target.value}),
-      connectSb:()=>{ if(!s.sbUrl||!s.sbKey){ this.setState({sbState:'error',sbMsg:'Paste the project URL and the anon public key first.'}); return; } this.doConnect(s.sbUrl.trim(),s.sbKey.trim()); },
-      pushSb:async()=>{ if(s.sbState!=='connected'){ this.setState({sbMsg:'Connect first, then push.'}); return; }
-        try{ const st=await this.store(); const n=await st.pushLocal(s.entries); const rows=await st.fetchEntries();
-          this.setState({entries:rows,sbMsg:n?n+' entries pushed to Supabase.':'Nothing local left to push.'}); }
-        catch(err){ this.setState({sbMsg:(err&&err.message)||'Push failed.'}); } },
+      accountRows:[{label:'Name',value:(s.me&&s.me.display_name)||''},{label:'Email',value:(s.me&&s.me.email)||''},
+        {label:'Wine lookups',value:s.apiKey?'YOUR OWN KEY':(s.me&&s.me.shared_key?'EOS KEY \u00b7 INVITED':'NO KEY YET')}],
+      apiKeyHint:s.me&&s.me.shared_key
+        ?'Optional. Your invite includes Eos\u2019s key, with a daily limit. Paste your own to use it instead.'
+        :'Kept on this phone only. Without it, Eos cannot read a list or write taste notes.',
+      signOut:()=>this.signOut(),
+      authGate:s.auth!=='in', authChecking:s.auth==='checking'||s.auth==='loading', authForm:s.auth==='out',
+      authCheckLine:s.auth==='loading'?'OPENING YOUR CELLAR':'ONE MOMENT',
+      authTitle:{signin:'Welcome back.',signup:'Start your cellar.',forgot:'Reset your password.',newpass:'Choose a new password.'}[mode],
+      authSub:{signin:'Your history is where you left it.',signup:'Every bottle you rate teaches Eos your palate.',forgot:'We will email you a link.',newpass:'Then you are straight back in.'}[mode],
+      authShowTabs:mode==='signin'||mode==='signup',
+      authTabs:[['signin','SIGN IN'],['signup','CREATE ACCOUNT']].map(([v,label],i)=>({v,label,
+        style:`flex:1;height:44px;border:none;border-left:${i?'1px solid rgba(251,243,231,0.18)':'none'};background:${mode===v?CREAM:'transparent'};color:${mode===v?'#14132B':'rgba(251,243,231,0.6)'};font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.5px;cursor:pointer`})),
+      setAuthMode:e=>this.setState({authMode:e.currentTarget.dataset.v,aMsg:''}),
+      authIsSignup:mode==='signup', authNeedsEmail:mode!=='newpass', authNeedsPass:mode!=='forgot',
+      authShowForgot:mode==='signin', authShowBack:mode==='forgot'||mode==='newpass',
+      goForgot:()=>this.setState({authMode:'forgot',aMsg:''}), backToSignin:()=>this.setState({authMode:'signin',aMsg:''}),
+      passAuto:mode==='signin'?'current-password':'new-password',
+      passPlaceholder:mode==='signin'?'Password':'Password, 8 characters or more',
+      aName:s.aName, aEmail:s.aEmail, aPass:s.aPass, aInvite:s.aInvite,
+      editAName:e=>this.setState({aName:e.target.value}), editAEmail:e=>this.setState({aEmail:e.target.value}),
+      editAPass:e=>this.setState({aPass:e.target.value}), editAInvite:e=>this.setState({aInvite:e.target.value}),
+      aMsg:s.aMsg, aMsgColor:s.aErr?'#F09274':'#8FD69A',
+      authAction:s.aBusy?'ONE MOMENT\u2026':{signin:'SIGN IN',signup:'CREATE ACCOUNT',forgot:'SEND THE LINK',newpass:'SAVE PASSWORD'}[mode],
+      submitAuth:e=>{ if(e&&e.preventDefault) e.preventDefault(); this.submitAuth(); },
       openLog:e=>{ const i=+e.currentTarget.dataset.i, r=recList[i]; if(!r) return;
         this.setState({log:r.name,rating:4,logUser:prof,logPrice:String(r.price||'').replace(/[^0-9.]/g,''),
           logServing:r.wineObj.serving||'Bottle',logNotes:'',logPlace:s.occasion||''}); },
@@ -1194,7 +1280,7 @@ class Component extends DCLogic {
         const next=[item,...s.entries]; this.setState({entries:next}); this.persist(next);
         this.writeEntry(item).then(saved=>{ if(saved&&saved.id!==item.id) this.setState(p=>({entries:p.entries.map(x=>x.id===item.id?saved:x)})); });
         this.fingerprintEntry(item);
-        this.flash('SAVED TO '+(prof==='Both'?'OUR':prof.toUpperCase()+'\u2019S')+' WANT-TO-TRY'); },
+        this.flash('SAVED TO WANT-TO-TRY'); },
       logOpen:!!s.log, logName:s.log, closeLog:()=>this.setState({log:null,logManual:false,editId:null}),
       logManual:!!s.logManual, logFromMenu:!!s.log&&!s.logManual,
       logKicker:s.editId?'EDIT THIS ENTRY':s.logManual?'A BOTTLE WE HAD':'WE CHOSE THIS',
@@ -1216,17 +1302,17 @@ class Component extends DCLogic {
       syncDot:s.sbState==='connected'?'#63C68A':s.sbState==='connecting'?'#F2B85C':s.sbState==='error'?'#F09274':'rgba(251,243,231,0.3)',
       syncGlow:s.sbState==='connected'?'rgba(99,198,138,0.7)':'transparent',
       syncTextColor:s.sbState==='connected'?'#63C68A':'rgba(251,243,231,0.4)',
-      statusTitle:(s.sbState==='connected'?'Synced':'Not synced')+' \u00b7 '+(s.apiKey?'Key active':'No key'),
-      keyDot:s.apiKey?'#63C68A':'#E4623F',
-      keyGlow:s.apiKey?'rgba(99,198,138,0.7)':'transparent',
-      keyTextColor:s.apiKey?'#63C68A':'#E4623F',
-      keyLabel:s.apiKey?'KEY ACTIVE':'NO KEY \u2014 TAP TO ADD',
+      statusTitle:(s.sbState==='connected'?'Synced':'Not synced')+' \u00b7 '+(hasKey?'Key active':'No key'),
+      keyDot:hasKey?'#63C68A':'#E4623F',
+      keyGlow:hasKey?'rgba(99,198,138,0.7)':'transparent',
+      keyTextColor:hasKey?'#63C68A':'#E4623F',
+      keyLabel:hasKey?'KEY ACTIVE':'NO KEY \u2014 TAP TO ADD',
       syncLabel:{connected:'LIVE \u00b7 BOTH PHONES IN SYNC',connecting:'CONNECTING\u2026',error:'NOT SYNCED \u2014 TAP TO FIX',local:'THIS PHONE ONLY \u2014 TAP TO SYNC'}[s.sbState]||'THIS PHONE ONLY',
       dialStops:[1,1.5,2,2.5,3,3.5,4,4.5,5].map(v=>({v})), sunPct:((s.rating-1)/4*100)+'%',
       ratingValue:s.rating.toFixed(1), ratingWord:WORDS[Math.round(s.rating)],
       setRating:e=>this.setState({rating:+e.currentTarget.dataset.v}),
       logPrice:s.logPrice, logCurrency:s.logCurrency, logServing:s.logServing, logServingUpper:s.logServing.toUpperCase(),
-      logNotes:s.logNotes, logPlace:s.logPlace, saveLabel:s.editId?'SAVE CHANGES':'ADD TO '+((s.logUser||prof)==='Both'?'OUR':(s.logUser||prof).toUpperCase()+'\u2019S')+' HISTORY',
+      logNotes:s.logNotes, logPlace:s.logPlace, saveLabel:s.editId?'SAVE CHANGES':'ADD TO HISTORY',
       editLogPrice:e=>this.setState({logPrice:e.target.value}),
       editLogPlace:e=>this.setState({logPlace:e.target.value}),
       editLogNotes:e=>this.setState({logNotes:e.target.value}),

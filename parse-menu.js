@@ -1,3 +1,4 @@
+import { claudeFetch } from './claude.js';
 // Menu photo → structured wine list, via the Anthropic Messages API called
 // directly from the browser with a user-supplied key.
 
@@ -79,14 +80,7 @@ export async function parsePhotos(dataUrls, key) {
     return { type: 'image', source: { type: 'base64', media_type: m[1], data: m[2] } };
   });
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
+  const res = await claudeFetch(key, {
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 8000,

@@ -1,9 +1,10 @@
+import { claudeFetch } from './claude.js';
 // Picks tonight's bottles from a parsed list, judged against the taste history
 // Eos has accumulated. With no history yet it says so and picks on merit.
 
 const MODEL = 'claude-sonnet-4-6';
 
-const SYSTEM = `You are a sommelier who knows two regular guests well and has their full drinking record in front of you. You recommend from the list actually in front of them, never from wines that are not on it. You are candid: if the list is weak, or nothing on it matches what they like, you say so.`;
+const SYSTEM = `You are a sommelier who knows this guest well and has their full drinking record in front of you. You recommend from the list actually in front of them, never from wines that are not on it. You are candid: if the list is weak, or nothing on it matches what they like, you say so.`;
 
 export async function pickWines({ wines, palate, note, budget, occasion, styles, profile, count = 3, exclude = [], focus = null }, key) {
   const list = wines.map((w, i) => {
@@ -39,14 +40,7 @@ Return ONLY a JSON array of ${focus !== null ? 1 : count} objects, no prose, no 
 - reason: 1-2 sentences. Name the specific past bottle or grape × region and its score when you are leaning on their record — "you gave Assyrtiko from Santorini a 4.8 last March, and this is the same grape from the same island". ${palate.empty ? 'THERE IS NO RECORD YET: say plainly that this is a first pick with nothing to go on, and justify it on the wine itself. Never imply you know their preferences.' : 'Do not invent a rating or a bottle that is not in the record above.'}
 - If the whole list is poor for them, still return the bottles asked for but say so honestly in the reasons.`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
+  const res = await claudeFetch(key, {
     body: JSON.stringify({
       model: MODEL, max_tokens: 2000, system: SYSTEM,
       messages: [{ role: 'user', content: prompt }],

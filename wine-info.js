@@ -1,3 +1,4 @@
+import { claudeFetch } from './claude.js';
 // Plain-language primer for a single wine, written by Claude and cached locally
 // so a wine you looked up a year ago costs nothing to look up again.
 
@@ -76,14 +77,7 @@ ${FIELDS}
 
 Be specific and factual about the producer and region where you are confident. Where you are not confident about this exact bottle, describe the category honestly rather than inventing detail about the estate or brewery.`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
+  const res = await claudeFetch(key, {
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1400,
@@ -148,14 +142,7 @@ Return ONLY this JSON object, no prose, no markdown fence:
 - digest: 2 sentences in plain English summarising what reviewers agree on — flavour, quality for the price, any common complaint. Specific words that reviewers actually use.
 - found: false if you found nothing about this specific wine or producer; then write digest about the producer or appellation in general and say that is what you did.`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
+  const res = await claudeFetch(key, {
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 1200,
